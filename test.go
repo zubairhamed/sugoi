@@ -39,9 +39,12 @@ type Request struct {
 	// Query
 	// Cookies
 	// Sessions
+		// get attribute
+		// set attribute
 }
 
 type Response struct {
+	// redirect
 
 }
 
@@ -61,11 +64,25 @@ func HaltWithMessage(msg string) {
 
 }
 
-func Before() {
+// Before every method
+func BeforeAll(Func) {
 
 }
 
-func After() {
+func Before(pattern string, Func) {
 
 }
 
+// After every methods
+func After(pattern string, Func) {
+
+}
+
+func AfterAll(Func) {
+
+}
+
+// Handling Exceptions
+func Error(err error, fn Func) {
+
+}
