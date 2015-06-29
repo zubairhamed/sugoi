@@ -4,24 +4,41 @@ import (
 	"net/http"
 	"errors"
 	"regexp"
-	"strings"
 	"strconv"
+	"fmt"
+	"encoding/json"
 )
 
 type Response interface{}
 type RouteHandler func(Request) Response
 
-
 func main() {
-	s := NewSugoi()
+	s := NewSugoi("8085")
 
 	s.GET("/", func(req Request) Response {
 		return "homepage"
 	})
 
-	s.GET("/hello/{name}", func(req Request) Response {
+	s.GET("/notfound", func(req Request) Response {
+		return NotFound()
+	})
+
+	s.GET("/hello/:name", func(req Request) Response {
 		name := req.GetAttribute("name")
+
 		return "hello " + name
+	})
+
+	s.GET("/person", func(req Request) Response {
+		var person struct {
+			name 	string
+			age 	int
+		}
+
+		person.name = "Zoob"
+		person.age = 38
+
+		return person
 	})
 
 
@@ -48,15 +65,32 @@ func main() {
 	s.Serve()
 }
 
-func NewSugoi() *SugoiServer {
+func NotFound(msg ... string) HttpCode {
+	var content string
+
+	if len(msg) > 0 {
+		content = msg[0]
+	} else {
+		content = "404 - Not Found"
+	}
+
+	return HttpCode{
+		code: http.StatusNotFound,
+		content: content,
+	}
+}
+
+func NewSugoi(port string) *SugoiServer {
 
 	return &SugoiServer{
 		handler: NewWrappedHandler(),
+		port: port,
 	}
 }
 
 type SugoiServer struct {
 	handler 	*WrappedHandler
+	port 		string
 }
 
 func (s *SugoiServer) add(method string, path string, fn RouteHandler) {
@@ -90,28 +124,43 @@ func (s *SugoiServer) PATCH(path string, fn RouteHandler) {
 func (s *SugoiServer) Serve() {
 	log.Println("Starting Sugoi!")
 
-	err := http.ListenAndServe(":8085", s.handler)
+	err := http.ListenAndServe(":" + s.port, s.handler)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func CreateCompilableRoutePath(pre string) (*regexp.Regexp, error) {
-	re, _ := regexp.Compile(`{[a-z]+}`)
+func CreateCompilableRoutePath(route string) (*regexp.Regexp, bool) {
+	var re *regexp.Regexp
+	var isStatic bool
 
-	matches := re.FindAllStringSubmatch(pre, -1)
+	regexpString := route
 
-	pre = "^" + pre
-	for _, b := range matches {
-		origAttr := b[0]
-		attr := strings.Replace(strings.Replace(origAttr, "{", "", -1), "}", "", -1)
-		frag := `(?P<` + attr + `>\w+)`
-		pre = strings.Replace(pre, origAttr, frag, -1)
+	isStaticRegexp := regexp.MustCompile(`[\(\)\?\<\>:]`)
+	if !isStaticRegexp.MatchString(route) {
+		isStatic = true
 	}
-	pre += "$"
-	re, err := regexp.Compile(pre)
 
-	return re, err
+	// Dots
+	re = regexp.MustCompile(`([^\\])\.`)
+	regexpString = re.ReplaceAllStringFunc(regexpString, func(m string) string {
+		return fmt.Sprintf(`%s\.`, string(m[0]))
+	})
+
+	// Wildcard names
+	re = regexp.MustCompile(`:[^/#?()\.\\]+\*`)
+	regexpString = re.ReplaceAllStringFunc(regexpString, func(m string) string {
+		return fmt.Sprintf("(?P<%s>.+)", m[1:len(m)-1])
+	})
+
+	re = regexp.MustCompile(`:[^/#?()\.\\]+`)
+	regexpString = re.ReplaceAllStringFunc(regexpString, func(m string) string {
+		return fmt.Sprintf(`(?P<%s>[^/#?]+)`, m[1:len(m)])
+	})
+
+	s := fmt.Sprintf(`\A%s\z`, regexpString)
+
+	return regexp.MustCompile(s), isStatic
 }
 
 func CreateNewRoute(path string, method string, fn RouteHandler) *Route {
@@ -143,10 +192,8 @@ func MatchesRoutePath(path string, re *regexp.Regexp) (bool, map[string]string) 
 		for idx, exp := range subExp {
 			attrs[exp] = matches[0][idx]
 		}
-
 		return true, attrs
 	}
-
 	return false, attrs
 }
 
@@ -173,7 +220,9 @@ type WrappedHandler struct {
 
 func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: Match BeforeAll
-	// TOOO: Match Before "pattern"
+
+	// TODO: Match Before "pattern"
+
 	fn, attrs, err := MatchingRoute(r.URL.Path, r.Method, wh.routes)
 
 	if err != nil {
@@ -190,16 +239,56 @@ func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: Match AfterAll
-	// TDOO: Match After "pattern"
+
+	// TODO: Match After "pattern"
+}
+
+type HttpCode struct {
+	code 	int
+	content string
+}
+
+func (h *HttpCode) GetCode() int {
+	return h.code
+}
+
+func (h *HttpCode) GetContent() string {
+	return h.content
 }
 
 func SendHttpResponse(response interface{}, w http.ResponseWriter) {
-	log.Println("Sending Back Response..", response)
 	ResponseHandler(response, w)
 }
 
-func ResponseHandler(response interface{}, w http.ResponseWriter) {
+func SendHttpCodeResponse(codeResponse HttpCode, w http.ResponseWriter) {
+	w.WriteHeader(codeResponse.GetCode())
 
+	if codeResponse.GetContent() != "" {
+		w.Write([]byte(codeResponse.GetContent()))
+	}
+}
+
+func ResponseHandler(response interface{}, w http.ResponseWriter) {
+	if val, ok := response.(string); ok {
+		w.Write([]byte(val))
+	} else
+	if val, ok := response.(int); ok {
+		log.Println("int", val)
+	} else
+	if val, ok := response.(HttpCode); ok {
+		SendHttpCodeResponse(val, w)
+	} else {
+		b, err := json.Marshal(response)
+		if err != nil {
+			errorHttpCode := HttpCode{
+				code: 500,
+				content: "An error occured processing request",
+			}
+			SendHttpCodeResponse(errorHttpCode, w)
+		} else {
+			w.Write(b)
+		}
+	}
 }
 
 func NewRequestFromHttp(attrs map[string]string) Request {
@@ -207,7 +296,6 @@ func NewRequestFromHttp(attrs map[string]string) Request {
 		attrs: attrs,
 	}
 }
-
 
 type Request struct {
 	attrs 	map[string]string
@@ -232,7 +320,6 @@ func (c *Request) GetAttributeAsInt(o string) int {
 
 	return i
 }
-
 
 // Functions
 func Halt(msg string, code int) {
