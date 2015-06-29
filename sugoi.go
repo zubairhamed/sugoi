@@ -5,35 +5,47 @@ import (
 	"errors"
 	"regexp"
 	"strings"
+	"strconv"
 )
 
-type RouteHandler func(Request) interface{}
+type Response interface{}
+type RouteHandler func(Request) Response
 
+
+/*
+	return NotFound("Missing file")
+ */
 func main() {
 	s := NewSugoi()
 
-	s.GET("/", func(req Request) interface{}{
-		return Response("hello")
+	s.GET("/", func(req Request) Response {
+		return "homepage"
 	})
 
-	s.DELETE("/", func(req Request) interface{}{
-		return Response(200, "")
+	s.GET("/hello/{name}", func(req Request) Response {
+		name := req.GetAttribute("name")
+		return "hello " + name
 	})
 
-	s.PUT("/", func(req Request) interface{}{
-		return 200
+
+	s.DELETE("/", func(req Request) Response {
+		return nil
 	})
 
-	s.POST("/", func(req Request) interface{}{
-		return 200
+	s.PUT("/", func(req Request) Response {
+		return nil
 	})
 
-	s.OPTIONS("/", func(req Request) interface{}{
-		return 200
+	s.POST("/", func(req Request) Response {
+		return nil
 	})
 
-	s.PATCH("/", func(req Request) interface{}{
-		return 200
+	s.OPTIONS("/", func(req Request) Response {
+		return nil
+	})
+
+	s.PATCH("/", func(req Request) Response {
+		return nil
 	})
 
 	s.Serve()
@@ -148,18 +160,14 @@ type Route struct {
 	regEx 	*regexp.Regexp
 }
 
-func Response(ret ... interface{}) {
-
-}
-
-func MatchingRoute(path string, method string, routes []*Route) (RouteHandler, error) {
+func MatchingRoute(path string, method string, routes []*Route) (RouteHandler, map[string]string, error) {
 	for _, route := range routes {
-		match, _ :=  MatchesRoutePath(path, route.regEx)
+		match, attrs :=  MatchesRoutePath(path, route.regEx)
 		if match {
-			return route.handler, nil
+			return route.handler, attrs, nil
 		}
 	}
-	return nil, ERR_NO_MATCHING_ROUTE
+	return nil, nil, ERR_NO_MATCHING_ROUTE
 }
 
 type WrappedHandler struct {
@@ -167,7 +175,7 @@ type WrappedHandler struct {
 }
 
 func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	fn, err := MatchingRoute(r.URL.Path, r.Method, wh.routes)
+	fn, attrs, err := MatchingRoute(r.URL.Path, r.Method, wh.routes)
 
 	if err != nil {
 		if err == ERR_NO_MATCHING_ROUTE {
@@ -175,10 +183,10 @@ func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		req := NewRequestFromHttp()
+		req := NewRequestFromHttp(attrs)
 		resp := fn(req)
 
-		SendHttpResponse(w, resp)
+		SendHttpResponse(resp, w)
 		return
 	}
 }
@@ -192,13 +200,15 @@ func ResponseHandler(response interface{}, w http.ResponseWriter) {
 
 }
 
-
-func NewRequestFromHttp() Request {
-	return Request{}
+func NewRequestFromHttp(attrs map[string]string) Request {
+	return Request{
+		attrs: attrs,
+	}
 }
 
 
 type Request struct {
+	attrs 	map[string]string
 	// Query
 	// Cookies
 	// Sessions
@@ -206,10 +216,21 @@ type Request struct {
 		// set attribute
 }
 
-type Response struct {
-	// redirect
-
+func (c *Request) GetAttributes() map[string]string {
+	return c.attrs
 }
+
+func (c *Request) GetAttribute(o string) string {
+	return c.attrs[o]
+}
+
+func (c *Request) GetAttributeAsInt(o string) int {
+	attr := c.GetAttribute(o)
+	i, _ := strconv.Atoi(attr)
+
+	return i
+}
+
 
 // Functions
 func Halt(msg string, code int) {
