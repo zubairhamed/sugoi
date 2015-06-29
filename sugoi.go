@@ -12,9 +12,6 @@ type Response interface{}
 type RouteHandler func(Request) Response
 
 
-/*
-	return NotFound("Missing file")
- */
 func main() {
 	s := NewSugoi()
 
@@ -269,3 +266,11 @@ func AfterAll(fn RouteHandler) {
 func Error(err error, fn RouteHandler) {
 
 }
+
+// Return Content Types
+	// text
+	// object : implicit json
+	// various error code objects
+	// specific content type (with converters)
+		// xml, json, plain text, binary etc
+	// with html template
