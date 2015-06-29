@@ -12,6 +12,11 @@ import (
 type Response interface{}
 type RouteHandler func(Request) Response
 
+type Person struct {
+	name 	string  `json:"name"`
+	age 	int     `json:"age"`
+}
+
 func main() {
 	s := NewSugoi("8085")
 
@@ -30,13 +35,11 @@ func main() {
 	})
 
 	s.GET("/person", func(req Request) Response {
-		var person struct {
-			name 	string
-			age 	int
-		}
 
-		person.name = "Zoob"
-		person.age = 38
+		person := &Person {
+			name: "Zoob",
+			age: 38,
+		}
 
 		return person
 	})
@@ -278,15 +281,14 @@ func ResponseHandler(response interface{}, w http.ResponseWriter) {
 	if val, ok := response.(HttpCode); ok {
 		SendHttpCodeResponse(val, w)
 	} else {
-		b, err := json.Marshal(response)
+		log.Println("Handling Object >> JSON", response)
+		err := json.NewEncoder(w).Encode(&response)
 		if err != nil {
 			errorHttpCode := HttpCode{
 				code: 500,
 				content: "An error occured processing request",
 			}
 			SendHttpCodeResponse(errorHttpCode, w)
-		} else {
-			w.Write(b)
 		}
 	}
 }
