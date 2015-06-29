@@ -172,6 +172,8 @@ type WrappedHandler struct {
 }
 
 func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// TODO: Match BeforeAll
+	// TOOO: Match Before "pattern"
 	fn, attrs, err := MatchingRoute(r.URL.Path, r.Method, wh.routes)
 
 	if err != nil {
@@ -186,6 +188,9 @@ func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		SendHttpResponse(resp, w)
 		return
 	}
+
+	// TODO: Match AfterAll
+	// TDOO: Match After "pattern"
 }
 
 func SendHttpResponse(response interface{}, w http.ResponseWriter) {
