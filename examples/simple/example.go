@@ -1,67 +1,75 @@
 package main
 
-import . "github.com/zubairhamed/sugoi"
+import (
+	. "github.com/zubairhamed/sugoi"
+)
 
 func main() {
 	s := NewSugoi("8085")
 
-
-	s.Before(func (req Request, chain *Chain) {
+	s.Before(func (req *Request, chain *Chain) {
 		chain.NextBefore(req)
 	})
 
-	s.After(func (res Response, chain *Chain) {
-		chain.NextAfter(res)
+	s.Before(func (req *Request, chain *Chain) {
+		chain.NextBefore(req)
 	})
 
-	s.GET("/", func(req Request) Response {
+//	s.After(func (res *Response, chain *Chain) {
+//		chain.NextAfter(res)
+//	})
+
+	s.GET("/", func(req *Request) Response {
+		req.GetHeaders()
 		return "Welcome"
 	})
 
-	s.GET("/notfound", func(req Request) Response {
+	s.GET("/err404", func(req *Request) Response {
 		return NotFound()
 	})
 
-	s.GET("/causeserror", func(req Request) Response {
+	s.GET("/err500", func(req *Request) Response {
 		return InternalServerError()
 	})
 
-	s.GET("/hello/:name", func(req Request) Response {
-		name := req.GetAttribute("name")
+	s.GET("/params/json/:id", func(req *Request) Response {
+		id := req.GetAttribute("id")
 
-		return "hello " + name
-	})
-
-	s.GET("/person", func(req Request) Response {
-
-		var person struct {
+		var thing struct {
 			Name 	string
-			Age 	int
+			Id 		string
 		}
 
-		person.Name = "Zoob"
-		person.Age = 37
+		thing.Id   = id
+		thing.Name = "Thing One"
 
-		return person
+		return OK()
 	})
 
-	s.DELETE("/", func(req Request) Response {
+	s.GET("/params/:val1/:val2", func(req *Request) Response {
+		val1 := req.GetAttribute("val1")
+		val2 := req.GetAttribute("val2")
+
+		return "Values: " + val1 + "," + val2
+	})
+
+	s.DELETE("/", func(req *Request) Response {
 		return nil
 	})
 
-	s.PUT("/", func(req Request) Response {
+	s.PUT("/", func(req *Request) Response {
 		return nil
 	})
 
-	s.POST("/", func(req Request) Response {
+	s.POST("/", func(req *Request) Response {
 		return nil
 	})
 
-	s.OPTIONS("/", func(req Request) Response {
+	s.OPTIONS("/", func(req *Request) Response {
 		return nil
 	})
 
-	s.PATCH("/", func(req Request) Response {
+	s.PATCH("/", func(req *Request) Response {
 		return nil
 	})
 

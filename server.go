@@ -7,16 +7,11 @@ import (
 func NewSugoi(port string) *SugoiServer {
 	return &SugoiServer{
 		handler: NewWrappedHandler(),
-		beforeFilters: []BeforeChainHandler{},
-		afterFilters: []AfterChainHandler{},
 		port: port,
 	}
 }
 
 type SugoiServer struct {
-	beforeFilters	[]BeforeChainHandler
-	afterFilters	[]AfterChainHandler
-	errorHandlers	[]ErrorHandler
 	handler 		*WrappedHandler
 	port 			string
 }
@@ -59,16 +54,16 @@ func (s *SugoiServer) Serve() {
 }
 
 // Before every method
-func (s *SugoiServer) Before(fn BeforeChainHandler) {
-	s.beforeFilters = append(s.beforeFilters, fn)
+func (s *SugoiServer) Before(fn BeforeFilter) {
+	s.handler.beforeFilters = append(s.handler.beforeFilters, fn)
 }
 
 // After every methods
-func (s *SugoiServer) After(fn AfterChainHandler) {
-	s.afterFilters = append(s.afterFilters, fn)
+func (s *SugoiServer) After(fn AfterFilter) {
+	s.handler.afterFilters = append(s.handler.afterFilters, fn)
 }
 
 // Handling Exceptions
 func (s *SugoiServer) Error(fn ErrorHandler) {
-	s.errorHandlers = append(s.errorHandlers, fn)
+	s.handler.errorHandlers = append(s.handler.errorHandlers, fn)
 }

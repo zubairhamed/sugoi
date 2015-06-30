@@ -1,14 +1,20 @@
 package sugoi
-import "strconv"
+import (
+	"strconv"
+	"net/http"
+	"log"
+)
 
-func NewRequestFromHttp(attrs map[string]string) Request {
-	return Request{
+func NewRequestFromHttp(attrs map[string]string, req *http.Request) *Request {
+	return &Request{
 		attrs: attrs,
+		httpRequest: req,
 	}
 }
 
 type Request struct {
-	attrs 	map[string]string
+	attrs 		map[string]string
+	httpRequest *http.Request
 	// Query
 	// Cookies
 	// Sessions
@@ -16,7 +22,16 @@ type Request struct {
 	// set attribute
 }
 
+func (c *Request) GetHttpRequest() *http.Request {
+	return c.httpRequest
+}
+
+func (c *Request) GetHeaders() {
+	log.Println(c.httpRequest.Header)
+}
+
 func (c *Request) GetAttributes() map[string]string {
+
 	return c.attrs
 }
 
@@ -35,5 +50,7 @@ func (c *Request) GetAttributeAsInt(o string) int {
 func NewWrappedHandler() (*WrappedHandler) {
 	return &WrappedHandler{
 		routes : []*Route{},
+		beforeFilters: []BeforeFilter{},
+		afterFilters: []AfterFilter{},
 	}
 }

@@ -80,13 +80,41 @@ func MatchingRoute(path string, method string, routes []*Route) (RouteHandler, m
 }
 
 type WrappedHandler struct {
-	routes 	[]*Route
+	routes 			[]*Route
+	beforeFilters	[]BeforeFilter
+	afterFilters	[]AfterFilter
+	errorHandlers	[]ErrorHandler
 }
 
-func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Match Before
+func invokeBeforeFilters(filters []BeforeFilter, req *Request) *Request {
+	if len(filters) > 0 {
+		chain := NewBeforeFilterChain(filters)
+		if chain != nil {
+			chain.filter.(BeforeFilter)(req, chain)
 
+			req = chain.GetFilteredRequest()
+		}
+	}
+	return req
+}
+
+//func invokeAfterFilters(filters []*AfterFilter, req *Response) *Response {
+//	if len(filters) > 0 {
+//		chain := NewAfterFilterChain(filters)
+//		if chain != nil {
+//			chain.filter.(AfterFilter)(req, chain)
+//
+//			req = chain.GetFilteredResponse()
+//		}
+//	}
+//	return req
+//}
+
+func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fn, attrs, err := MatchingRoute(r.URL.Path, r.Method, wh.routes)
+	req := NewRequestFromHttp(attrs, r)
+
+	req = invokeBeforeFilters(wh.beforeFilters, req)
 
 	if err != nil {
 		if err == ERR_NO_MATCHING_ROUTE {
@@ -94,7 +122,6 @@ func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		req := NewRequestFromHttp(attrs)
 		resp := fn(req)
 
 		SendHttpResponse(resp, w)
@@ -102,4 +129,7 @@ func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: Match After
+	if len(wh.afterFilters) > 0 {
+
+	}
 }
