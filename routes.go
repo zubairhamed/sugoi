@@ -3,6 +3,7 @@ import (
 	"regexp"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 func CreateCompilableRoutePath(route string) (*regexp.Regexp, bool) {
@@ -84,6 +85,7 @@ type WrappedHandler struct {
 	beforeFilters	[]BeforeFilter
 	afterFilters	[]AfterFilter
 	errorHandlers	[]ErrorHandler
+	defaultHandlers map[string]RouteHandler
 }
 
 func invokeBeforeFilters(filters []BeforeFilter, req *Request) *Request {
@@ -110,6 +112,34 @@ func invokeBeforeFilters(filters []BeforeFilter, req *Request) *Request {
 //	return req
 //}
 
+func (wh *WrappedHandler) CallDefaultHandler(code int, req *Request) Content {
+	h := wh.defaultHandlers[strconv.Itoa(code)]
+	if h != nil {
+		return h(req)
+	} else {
+		switch code {
+			case 404:
+			return NotFound()
+
+			case 500:
+			return InternalServerError()
+		}
+	}
+}
+
+func NewResponse(content interface{}, httpCode int) *Response {
+	return &Response{
+		httpCode: httpCode,
+		content: content,
+	}
+}
+
+func SendResponse(content interface{}, code int, w http.ResponseWriter,) {
+	response := NewResponse(content, code)
+
+	ResponseHandler(response, w)
+}
+
 func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fn, attrs, err := MatchingRoute(r.URL.Path, r.Method, wh.routes)
 	req := NewRequestFromHttp(attrs, r)
@@ -118,14 +148,17 @@ func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		if err == ERR_NO_MATCHING_ROUTE {
-			http.NotFound(w, r)
+			content := wh.CallDefaultHandler(404, req)
+			SendResponse(content, 404, w)
 			return
 		}
 	} else {
-		resp := fn(req)
-
-		SendHttpResponse(resp, w)
-		return
+		content := fn(req)
+		if val, ok := content.(HttpCode); ok {
+			SendResponse(val.content, val.code, w)
+		} else {
+			SendResponse(content, http.StatusOK, w)
+		}
 	}
 
 	// TODO: Match After

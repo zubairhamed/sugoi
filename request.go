@@ -2,7 +2,6 @@ package sugoi
 import (
 	"strconv"
 	"net/http"
-	"log"
 )
 
 func NewRequestFromHttp(attrs map[string]string, req *http.Request) *Request {
@@ -26,10 +25,6 @@ func (c *Request) GetHttpRequest() *http.Request {
 	return c.httpRequest
 }
 
-func (c *Request) GetHeaders() {
-	log.Println(c.httpRequest.Header)
-}
-
 func (c *Request) GetAttributes() map[string]string {
 
 	return c.attrs
@@ -46,11 +41,11 @@ func (c *Request) GetAttributeAsInt(o string) int {
 	return i
 }
 
-
 func NewWrappedHandler() (*WrappedHandler) {
 	return &WrappedHandler{
 		routes : []*Route{},
 		beforeFilters: []BeforeFilter{},
 		afterFilters: []AfterFilter{},
+		defaultHandlers: make(map[string]RouteHandler),
 	}
 }

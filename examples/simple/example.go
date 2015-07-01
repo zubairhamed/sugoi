@@ -19,20 +19,19 @@ func main() {
 //		chain.NextAfter(res)
 //	})
 
-	s.GET("/", func(req *Request) Response {
-		req.GetHeaders()
+	s.GET("/", func(req *Request) Content {
 		return "Welcome"
 	})
 
-	s.GET("/err404", func(req *Request) Response {
+	s.GET("/err404", func(req *Request) Content {
 		return NotFound()
 	})
 
-	s.GET("/err500", func(req *Request) Response {
+	s.GET("/err500", func(req *Request) Content {
 		return InternalServerError()
 	})
 
-	s.GET("/params/json/:id", func(req *Request) Response {
+	s.GET("/params/json/:id", func(req *Request) Content {
 		id := req.GetAttribute("id")
 
 		var thing struct {
@@ -43,33 +42,33 @@ func main() {
 		thing.Id   = id
 		thing.Name = "Thing One"
 
-		return OK()
+		return thing
 	})
 
-	s.GET("/params/:val1/:val2", func(req *Request) Response {
+	s.GET("/params/:val1/:val2", func(req *Request) Content {
 		val1 := req.GetAttribute("val1")
 		val2 := req.GetAttribute("val2")
 
 		return "Values: " + val1 + "," + val2
 	})
 
-	s.DELETE("/", func(req *Request) Response {
+	s.DELETE("/", func(req *Request) Content {
 		return nil
 	})
 
-	s.PUT("/", func(req *Request) Response {
+	s.PUT("/", func(req *Request) Content {
 		return nil
 	})
 
-	s.POST("/", func(req *Request) Response {
+	s.POST("/", func(req *Request) Content {
 		return nil
 	})
 
-	s.OPTIONS("/", func(req *Request) Response {
+	s.OPTIONS("/", func(req *Request) Content {
 		return nil
 	})
 
-	s.PATCH("/", func(req *Request) Response {
+	s.PATCH("/", func(req *Request) Content {
 		return nil
 	})
 

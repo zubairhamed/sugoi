@@ -2,7 +2,8 @@ package sugoi
 import (
 	"net/http"
 	"encoding/json"
-	"log"
+	"text/template"
+	"strconv"
 )
 
 func msgContent(defaultMsg string, msg ... string) string {
@@ -149,38 +150,39 @@ func MovedPermanently(msg ... string) HttpCode {
 	}
 }
 
-func SendHttpResponse(response interface{}, w http.ResponseWriter) {
-	ResponseHandler(response, w)
-}
+//func SendHttpCodeResponse(codeResponse HttpCode, w http.ResponseWriter) {
+//	w.WriteHeader(codeResponse.GetCode())
+//
+//	if codeResponse.GetContent() != "" {
+//		w.Write([]byte(codeResponse.GetContent()))
+//	}
+//}
 
-func SendHttpCodeResponse(codeResponse HttpCode, w http.ResponseWriter) {
-	w.WriteHeader(codeResponse.GetCode())
+func ResponseHandler(response Response, w http.ResponseWriter) {
+	content := response.content
+	httpCode := response.httpCode
+	w.WriteHeader(httpCode)
 
-	if codeResponse.GetContent() != "" {
-		w.Write([]byte(codeResponse.GetContent()))
-	}
-}
-
-func ResponseHandler(response interface{}, w http.ResponseWriter) {
-	if val, ok := response.(string); ok {
+	if val, ok := content.(string); ok {
 		w.Write([]byte(val))
 	} else
-	if val, ok := response.(int); ok {
-		log.Println("int", val)
+	if val, ok := content.(int); ok {
+		w.Write([]byte(strconv.Atoi(val)))
 	} else
-	if val, ok := response.(HttpCode); ok {
-		SendHttpCodeResponse(val, w)
-	} else {
-		log.Println("Handling Object >> JSON", response)
-		b, err := json.Marshal(response)
-
-		log.Println(err)
+	if val, ok := content.(*HtmlContent); ok {
+		tpl := template.New(val.tpl)
+		t, err := tpl.ParseFiles(val.tpl)
 		if err != nil {
-			errorHttpCode := HttpCode{
-				code: 500,
-				content: "An error occured processing request",
-			}
-			SendHttpCodeResponse(errorHttpCode, w)
+			ise := InternalServerError(err.Error())
+			SendResponse(InternalServerError(err.Error()), 500, w)
+		}
+		err = t.Execute(w, val.model)
+	} else {
+		b, err := json.Marshal(content)
+
+		if err != nil {
+			ise := InternalServerError(err.Error())
+			SendResponse(InternalServerError(err.Error()), 500, w)
 		} else {
 			w.Write(b)
 		}
@@ -198,4 +200,21 @@ func (h *HttpCode) GetCode() int {
 
 func (h *HttpCode) GetContent() string {
 	return h.content
+}
+
+type Response struct {
+	httpCode 	int
+	content 	interface{}
+}
+
+func Html(tpl string, model interface{}) *HtmlContent {
+	return &HtmlContent{
+		tpl: tpl,
+		model: model,
+	}
+}
+
+type HtmlContent struct {
+	tpl 	string
+	model 	interface{}
 }

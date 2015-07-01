@@ -4,10 +4,10 @@ import (
 	"errors"
 )
 
-type Response interface{}
+type Content interface{}
 type BeforeFilter func(*Request, *Chain)
 type AfterFilter  func(*Response, *Chain)
-type RouteHandler func(*Request) Response
+type RouteHandler func(*Request) Content
 type ErrorHandler func(*Request, error)
 
 var ERR_NO_MATCHING_ROUTE = errors.New("No matching route found")

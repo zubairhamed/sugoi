@@ -44,6 +44,14 @@ func (s *SugoiServer) PATCH(path string, fn RouteHandler) {
 	s.add("patch", path, fn)
 }
 
+func (c *SugoiServer) Set404(fn RouteHandler) {
+	c.handler.defaultHandlers["404"] = fn
+}
+
+func (c *SugoiServer) Set500(fn RouteHandler) {
+	c.handler.defaultHandlers["500"] = fn
+}
+
 func (s *SugoiServer) Serve() {
 	log.Println("Starting Sugoi!")
 
