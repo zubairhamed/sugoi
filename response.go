@@ -150,41 +150,43 @@ func MovedPermanently(msg ... string) HttpCode {
 	}
 }
 
-//func SendHttpCodeResponse(codeResponse HttpCode, w http.ResponseWriter) {
-//	w.WriteHeader(codeResponse.GetCode())
-//
-//	if codeResponse.GetContent() != "" {
-//		w.Write([]byte(codeResponse.GetContent()))
-//	}
-//}
-
-func ResponseHandler(response Response, w http.ResponseWriter) {
+func ResponseHandler(response *Response, w http.ResponseWriter) {
 	content := response.content
 	httpCode := response.httpCode
 	w.WriteHeader(httpCode)
 
 	if val, ok := content.(string); ok {
 		w.Write([]byte(val))
+		return
 	} else
 	if val, ok := content.(int); ok {
-		w.Write([]byte(strconv.Atoi(val)))
+		w.Write([]byte(strconv.Itoa(val)))
+		return
 	} else
 	if val, ok := content.(*HtmlContent); ok {
 		tpl := template.New(val.tpl)
-		t, err := tpl.ParseFiles(val.tpl)
-		if err != nil {
-			ise := InternalServerError(err.Error())
-			SendResponse(InternalServerError(err.Error()), 500, w)
+		if val.isStatic {
+			tpl.Delims("##", "##")
 		}
+
+		t, err := tpl.ParseFiles(val.tpl)
+
+		if err != nil {
+			SendResponse(InternalServerError(err.Error()), w)
+			return
+		}
+
 		err = t.Execute(w, val.model)
+		return
 	} else {
 		b, err := json.Marshal(content)
 
 		if err != nil {
-			ise := InternalServerError(err.Error())
-			SendResponse(InternalServerError(err.Error()), 500, w)
+			SendResponse(InternalServerError(err.Error()), w)
+			return
 		} else {
 			w.Write(b)
+			return
 		}
 	}
 }
@@ -207,14 +209,39 @@ type Response struct {
 	content 	interface{}
 }
 
-func Html(tpl string, model interface{}) *HtmlContent {
+func StaticHtml(tpl string) *HtmlContent {
+	return &HtmlContent{
+		tpl: tpl,
+		isStatic: true,
+	}
+}
+
+func TemplateHtml(tpl string, model interface{}) *HtmlContent {
 	return &HtmlContent{
 		tpl: tpl,
 		model: model,
+		isStatic: false,
 	}
 }
 
 type HtmlContent struct {
-	tpl 	string
-	model 	interface{}
+	tpl 		string
+	model 		interface{}
+	isStatic	bool
 }
+
+// TODO
+func Xml() {
+
+}
+
+func Json() {
+
+}
+
+func PlainText() {
+
+}
+
+
+

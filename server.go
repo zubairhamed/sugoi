@@ -16,6 +16,11 @@ type SugoiServer struct {
 	port 			string
 }
 
+func (s *SugoiServer) SetStatic(url, dir string) {
+	s.handler.staticUrl = url
+	s.handler.staticDir = dir
+}
+
 func (s *SugoiServer) add(method string, path string, fn RouteHandler) {
 	s.handler.routes = append(s.handler.routes, CreateNewRoute(path, method, fn))
 }
@@ -44,12 +49,12 @@ func (s *SugoiServer) PATCH(path string, fn RouteHandler) {
 	s.add("patch", path, fn)
 }
 
-func (c *SugoiServer) Set404(fn RouteHandler) {
-	c.handler.defaultHandlers["404"] = fn
+func Set404Page(s *SugoiServer, fn RouteHandler) {
+	s.handler.defaultHandlers["404"] = fn
 }
 
-func (c *SugoiServer) Set500(fn RouteHandler) {
-	c.handler.defaultHandlers["500"] = fn
+func Set500Page(s *SugoiServer, fn RouteHandler) {
+	s.handler.defaultHandlers["500"] = fn
 }
 
 func (s *SugoiServer) Serve() {

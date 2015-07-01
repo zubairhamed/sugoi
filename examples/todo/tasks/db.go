@@ -1,7 +1,10 @@
 package tasks
+import "log"
 
 func NewTaskDB() *TasksDB {
-	return &TasksDB{}
+	return &TasksDB{
+		tasks: make(map[string]*Task),
+	}
 }
 
 type TasksDB struct {
@@ -9,19 +12,24 @@ type TasksDB struct {
 }
 
 func (db *TasksDB) GetAll() []*Task {
-	tasks := make([]*Task, len(db.tasks))
+	tasks := []*Task{}
+
+	log.Println(len(db.tasks))
 	for _, v := range db.tasks {
 		tasks = append(tasks, v)
 	}
+
+	log.Println("Return tasks", tasks)
 	return tasks
 }
 
 func (db *TasksDB) Put(task *Task) {
-	db.tasks[task.id] = task
+	log.Println("Put", task)
+	db.tasks[task.Id] = task
 }
 
 func (db *TasksDB) Delete(t *Task) {
-	delete(db.tasks, t.id)
+	delete(db.tasks, t.Id)
 }
 
 func (db *TasksDB) Get(id string) *Task {
@@ -30,12 +38,12 @@ func (db *TasksDB) Get(id string) *Task {
 
 func NewTask(id, description string) *Task {
 	return &Task{
-		id: id,
-		description: description,
+		Id: id,
+		Description: description,
 	}
 }
 
 type Task struct {
-	id 			string
-	description	string
+	Id 			string
+	Description	string
 }

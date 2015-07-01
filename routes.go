@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func CreateCompilableRoutePath(route string) (*regexp.Regexp, bool) {
@@ -86,6 +87,9 @@ type WrappedHandler struct {
 	afterFilters	[]AfterFilter
 	errorHandlers	[]ErrorHandler
 	defaultHandlers map[string]RouteHandler
+
+	staticUrl 		string
+	staticDir 		string
 }
 
 func invokeBeforeFilters(filters []BeforeFilter, req *Request) *Request {
@@ -124,6 +128,7 @@ func (wh *WrappedHandler) CallDefaultHandler(code int, req *Request) Content {
 			case 500:
 			return InternalServerError()
 		}
+		return InternalServerError()
 	}
 }
 
@@ -134,14 +139,25 @@ func NewResponse(content interface{}, httpCode int) *Response {
 	}
 }
 
-func SendResponse(content interface{}, code int, w http.ResponseWriter,) {
-	response := NewResponse(content, code)
-
+func SendResponse(content interface{}, w http.ResponseWriter) {
+	var response *Response
+	if val, ok := content.(HttpCode); ok {
+		response = NewResponse(val.content, val.code)
+	} else {
+		response = NewResponse(content, http.StatusOK)
+	}
 	ResponseHandler(response, w)
 }
 
 func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	fn, attrs, err := MatchingRoute(r.URL.Path, r.Method, wh.routes)
+	urlPath := r.URL.Path
+
+	if strings.HasPrefix(urlPath, wh.staticUrl) {
+		http.ServeFile(w, r, urlPath[1:])
+		return
+	}
+
+	fn, attrs, err := MatchingRoute(urlPath, r.Method, wh.routes)
 	req := NewRequestFromHttp(attrs, r)
 
 	req = invokeBeforeFilters(wh.beforeFilters, req)
@@ -149,16 +165,11 @@ func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == ERR_NO_MATCHING_ROUTE {
 			content := wh.CallDefaultHandler(404, req)
-			SendResponse(content, 404, w)
+			SendResponse(content, w)
 			return
 		}
 	} else {
-		content := fn(req)
-		if val, ok := content.(HttpCode); ok {
-			SendResponse(val.content, val.code, w)
-		} else {
-			SendResponse(content, http.StatusOK, w)
-		}
+		SendResponse(fn(req), w)
 	}
 
 	// TODO: Match After

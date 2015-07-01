@@ -20,41 +20,48 @@ func main() {
 }
 
 func setupDefaults(server *SugoiServer) {
-	server.Set404(func(req *Request) Content {
-		return "Content was not found"
+	server.SetStatic("/static", "static")
+
+	Set404Page(server, func(req *Request) Content {
+		return StaticHtml("404.html")
+	})
+
+	Set500Page(server, func(req *Request) Content {
+		return StaticHtml("500.html")
 	})
 }
 
 func setupRoutes(server *SugoiServer) {
 	server.GET("/", func(req *Request) Content {
-		return Html("index.html", nil)
+		return StaticHtml("index.html")
 	})
 
-	server.GET("/tasks", func(req *Request) Content {
+	server.GET("/api/tasks", func(req *Request) Content {
 		return taskDB.GetAll()
 	})
 
-	server.DELETE("/tasks", func(req *Request) Content {
+	server.DELETE("/api/tasks", func(req *Request) Content {
 		return OK()
 	})
 
-	server.GET("/task/:id", func(req *Request) Content {
+	server.GET("/api/task/:id", func(req *Request) Content {
 		return OK()
 	})
 
-	server.PUT("/task/:id", func(req *Request) Content {
+	server.PUT("/api/task/:id", func(req *Request) Content {
 		return OK()
 	})
 
-	server.POST("/task/:id", func(req *Request) Content {
+	server.POST("/api/task/:id", func(req *Request) Content {
 		return OK()
 	})
 
-	server.DELETE("/task/:id", func(req *Request) Content {
+	server.DELETE("/api/task/:id", func(req *Request) Content {
 		return OK()
 	})
 }
 
 func setupDB(db *tasks.TasksDB) {
-
+	t := tasks.NewTask("0", "Add a new Task")
+	db.Put(t)
 }
