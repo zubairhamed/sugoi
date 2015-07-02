@@ -229,19 +229,3 @@ type HtmlContent struct {
 	model 		interface{}
 	isStatic	bool
 }
-
-// TODO
-func Xml() {
-
-}
-
-func Json() {
-
-}
-
-func PlainText() {
-
-}
-
-
-

@@ -2,30 +2,19 @@
 <head>
     <title>ABC</title>
     <script src="static/angular1.3.13.js"></script>
-    <script src="static/ui-bootstrap-tpls-0.13.0.js"></script>
+    <script src="static/bootstrap.min.js"></script>
+
     <link href="static/bootstrap.min.css" rel="stylesheet">
+    <link href="static/bootstrap-theme.css" rel="stylesheet">
     <script>
-        angular.module('ui.bootstrap.demo', ['ui.bootstrap']);
-        angular.module('ui.bootstrap.demo').controller('AlertDemoCtrl', function ($scope) {
-            $scope.alerts = [
-                { type: 'danger', msg: 'Oh snap! Change a few things up and try submitting again.' },
-                { type: 'success', msg: 'Well done! You successfully read this important alert message.' }
-            ];
 
-            $scope.addAlert = function() {
-                $scope.alerts.push({msg: 'Another alert!'});
-            };
-
-            $scope.closeAlert = function(index) {
-                $scope.alerts.splice(index, 1);
-            };
-        });
     </script>
 </head>
 <body>
-    <div ng-controller="AlertDemoCtrl">
-        <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-        <button class='btn btn-default' ng-click="addAlert()">Add Alert</button>
-    </div>
+    <!-- TextField : [Button: Add] -->
+    <!-- TextField Search -->
+    <!-- table  | button delete all
+            text task item | checkbox done | button delete
+    -->
 </body>
 </html>

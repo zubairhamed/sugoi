@@ -21,6 +21,18 @@ func (s *SugoiServer) SetStatic(url, dir string) {
 	s.handler.staticDir = dir
 }
 
+func (s *SugoiServer) GetRoutes(method string) []*Route {
+	routes := []*Route{}
+
+	for _, o := range s.handler.routes {
+		if o.method == method {
+			routes = append(routes, o)
+		}
+	}
+
+	return routes
+}
+
 func (s *SugoiServer) add(method string, path string, fn RouteHandler) {
 	s.handler.routes = append(s.handler.routes, CreateNewRoute(path, method, fn))
 }
@@ -50,11 +62,23 @@ func (s *SugoiServer) PATCH(path string, fn RouteHandler) {
 }
 
 func Set404Page(s *SugoiServer, fn RouteHandler) {
-	s.handler.defaultHandlers["404"] = fn
+	putDefaultHandler(s, http.StatusNotFound, fn)
 }
 
 func Set500Page(s *SugoiServer, fn RouteHandler) {
-	s.handler.defaultHandlers["500"] = fn
+	putDefaultHandler(s, http.StatusInternalServerError, fn)
+}
+
+func Set401Page(s *SugoiServer, fn RouteHandler) {
+	putDefaultHandler(s, http.StatusUnauthorized, fn)
+}
+
+func Set403Page(s *SugoiServer, fn RouteHandler) {
+	putDefaultHandler(s, http.StatusForbidden, fn)
+}
+
+func putDefaultHandler(s *SugoiServer, code int,  fn RouteHandler) {
+	s.handler.defaultHandlers[code] = fn
 }
 
 func (s *SugoiServer) Serve() {
@@ -69,11 +93,6 @@ func (s *SugoiServer) Serve() {
 // Before every method
 func (s *SugoiServer) Before(fn BeforeFilter) {
 	s.handler.beforeFilters = append(s.handler.beforeFilters, fn)
-}
-
-// After every methods
-func (s *SugoiServer) After(fn AfterFilter) {
-	s.handler.afterFilters = append(s.handler.afterFilters, fn)
 }
 
 // Handling Exceptions

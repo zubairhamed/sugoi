@@ -1,44 +1,37 @@
 package sugoi
 import (
-	"regexp"
-	"fmt"
-	"net/http"
-	"strings"
+	"testing"
+	"github.com/stretchr/testify/assert"
 )
 
-func CreateCompilableRoutePath(route string) (*regexp.Regexp, bool) {
-	var re *regexp.Regexp
-	var isStatic bool
+func TestRoutes(t *testing.T) {
+	re, static := CreateCompilableRoutePath("/")
+	assert.True(t, static)
+	assert.True(t, re.MatchString("/"))
 
-	regexpString := route
+	re, static = CreateCompilableRoutePath("/test")
+	assert.True(t, static)
+	assert.False(t, re.MatchString("/"))
+	assert.True(t,  re.MatchString("/test"))
 
-	isStaticRegexp := regexp.MustCompile(`[\(\)\?\<\>:]`)
-	if !isStaticRegexp.MatchString(route) {
-		isStatic = true
-	}
+	re, static = CreateCompilableRoutePath("/test/:var")
+	assert.False(t, static)
+	assert.True(t, re.MatchString("/test/abc"))
+	assert.False(t, re.MatchString("/test/abc/def"))
 
-	// Dots
-	re = regexp.MustCompile(`([^\\])\.`)
-	regexpString = re.ReplaceAllStringFunc(regexpString, func(m string) string {
-		return fmt.Sprintf(`%s\.`, string(m[0]))
-	})
+	fn := func(*Request) Content { return nil }
+	// CreateNewRoute
+	route := CreateNewRoute("/", "GET", fn)
 
-	// Wildcard names
-	re = regexp.MustCompile(`:[^/#?()\.\\]+\*`)
-	regexpString = re.ReplaceAllStringFunc(regexpString, func(m string) string {
-		return fmt.Sprintf("(?P<%s>.+)", m[1:len(m)-1])
-	})
+	assert.NotNil(t, route)
 
-	re = regexp.MustCompile(`:[^/#?()\.\\]+`)
-	regexpString = re.ReplaceAllStringFunc(regexpString, func(m string) string {
-		return fmt.Sprintf(`(?P<%s>[^/#?]+)`, m[1:len(m)])
-	})
-
-	s := fmt.Sprintf(`\A%s\z`, regexpString)
-
-	return regexp.MustCompile(s), isStatic
+	assert.Equal(t, "GET", route.method)
+	assert.Equal(t, "/", route.path)
+	assert.True(t, route.regEx.MatchString("/"))
+	assert.False(t, route.regEx.MatchString("/test"))
 }
 
+/*
 func CreateNewRoute(path string, method string, fn RouteHandler) *Route {
 	re, _ := CreateCompilableRoutePath(path)
 
@@ -158,3 +151,5 @@ func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		SendResponse(fn(req), w)
 	}
 }
+
+ */

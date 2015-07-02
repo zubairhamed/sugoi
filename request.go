@@ -45,7 +45,6 @@ func NewWrappedHandler() (*WrappedHandler) {
 	return &WrappedHandler{
 		routes : []*Route{},
 		beforeFilters: []BeforeFilter{},
-		afterFilters: []AfterFilter{},
-		defaultHandlers: make(map[string]RouteHandler),
+		defaultHandlers: make(map[int]RouteHandler),
 	}
 }
