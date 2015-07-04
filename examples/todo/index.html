@@ -10,8 +10,20 @@
     <script>
         var app = angular.module('todo.demo', []);
         app.controller('todo.controller', function($scope, $http) {
+            $scope.DeleteTodo = function (id) {
+                DeleteTask($scope, $http, id)
+
+            }
+
             RefreshPage($scope, $http)
         });
+
+        function DeleteTask($scope, $http, id) {
+            alert("/api/task/" + id);
+            $http.delete("/api/task/" + id).success(function (response) {
+                RefreshPage($scope, $http)
+            });
+        }
 
         function RefreshPage($scope, $http) {
             $http.get("/api/tasks").success(function (response) {
@@ -47,7 +59,7 @@
                         <tr ng-repeat="t in tasks">
                             <td><input type="checkbox" /></td>
                             <td>{{ t.Description }}</td>
-                            <td><button>Delete</button></td>
+                            <td><button ng-click="DeleteTodo(t.Id)">Delete</button></td>
                         </tr>
                     </tbody>
                 </table>

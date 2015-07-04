@@ -3,6 +3,7 @@ package main
 import (
 	. "github.com/zubairhamed/sugoi"
 	"github.com/zubairhamed/sugoi/examples/todo/tasks"
+	"log"
 )
 
 var taskDB *tasks.TasksDB
@@ -50,22 +51,27 @@ func setupDB(db *tasks.TasksDB) {
 
 // Route Handlers
 func handleGetAllTasks(req *Request) Content {
+	log.Println("handleGetAllTasks")
 	return taskDB.GetAll()
 }
 
 func handleDeleteAllTasks(req *Request) Content {
+	log.Println("handlDeleteAllTasks")
 	return taskDB.GetAll()
 }
 
 func handleGetTask(req *Request) Content {
+	log.Println("handleGetTask")
 	return OK()
 }
 
 func handleAddTask(req *Request) Content {
+	log.Println("handleAddTask")
 	return OK()
 }
 
 func handleDeleteTask(req *Request) Content {
+	log.Println("Deleting task", req.GetAttribute("id"))
 	return OK()
 }
 

@@ -18,13 +18,10 @@ func (db *TasksDB) GetAll() []*Task {
 	for _, v := range db.tasks {
 		tasks = append(tasks, v)
 	}
-
-	log.Println("Return tasks", tasks)
 	return tasks
 }
 
 func (db *TasksDB) Put(task *Task) {
-	log.Println("Put", task)
 	db.tasks[task.Id] = task
 }
 

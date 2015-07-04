@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"log"
 )
 
 func CreateCompilableRoutePath(route string) (*regexp.Regexp, bool) {
@@ -72,9 +73,11 @@ type Route struct {
 
 func MatchingRoute(path string, method string, routes []*Route) (RouteHandler, map[string]string, error) {
 	for _, route := range routes {
-		match, attrs :=  MatchesRoutePath(path, route.regEx)
-		if match {
-			return route.handler, attrs, nil
+		if method == route.method {
+			match, attrs :=  MatchesRoutePath(path, route.regEx)
+			if match {
+				return route.handler, attrs, nil
+			}
 		}
 	}
 	return nil, nil, ERR_NO_MATCHING_ROUTE
@@ -137,13 +140,16 @@ func SendResponse(content interface{}, w http.ResponseWriter) {
 
 func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	urlPath := r.URL.Path
+	method := strings.ToLower(r.Method)
 
 	if strings.HasPrefix(urlPath, wh.staticUrl) {
 		http.ServeFile(w, r, urlPath[1:])
 		return
 	}
 
-	fn, attrs, err := MatchingRoute(urlPath, r.Method, wh.routes)
+
+	log.Println("Matching Route: ", urlPath, method)
+	fn, attrs, err := MatchingRoute(urlPath, method, wh.routes)
 	req := NewRequestFromHttp(attrs, r)
 	req = invokeBeforeFilters(wh.beforeFilters, req)
 
