@@ -50,7 +50,7 @@ func setupDB(db *tasks.TasksDB) {
 
 // Route Handlers
 func handleGetAllTasks(req *Request) Content {
-	return StaticHtml("index.html")
+	return taskDB.GetAll()
 }
 
 func handleDeleteAllTasks(req *Request) Content {

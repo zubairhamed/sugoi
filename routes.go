@@ -145,7 +145,6 @@ func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	fn, attrs, err := MatchingRoute(urlPath, r.Method, wh.routes)
 	req := NewRequestFromHttp(attrs, r)
-
 	req = invokeBeforeFilters(wh.beforeFilters, req)
 
 	if err != nil {

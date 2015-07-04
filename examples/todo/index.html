@@ -1,20 +1,59 @@
-<html ng-app="ui.bootstrap.demo">
+<html ng-app="todo.demo" ng-controller="todo.controller">
 <head>
-    <title>ABC</title>
-    <script src="static/angular1.3.13.js"></script>
+    <title>Todo List</title>
+    <script src="static/jquery-1.11.3.min.js"></script>
+    <script src="static/angular.min.js"></script>
     <script src="static/bootstrap.min.js"></script>
 
     <link href="static/bootstrap.min.css" rel="stylesheet">
     <link href="static/bootstrap-theme.css" rel="stylesheet">
     <script>
+        var app = angular.module('todo.demo', []);
+        app.controller('todo.controller', function($scope, $http) {
+            RefreshPage($scope, $http)
+        });
 
+        function RefreshPage($scope, $http) {
+            $http.get("/api/tasks").success(function (response) {
+                $scope.tasks = response;
+            });
+        }
     </script>
 </head>
 <body>
-    <!-- TextField : [Button: Add] -->
-    <!-- TextField Search -->
-    <!-- table  | button delete all
-            text task item | checkbox done | button delete
-    -->
+    <div class="container" style="margin: 0 auto; margin-top: 40px; border: 2px solid black;">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row" style="padding: 10px;">
+                    <form>
+                        <label for="searchInput">Search</label>
+                        <input type="text" class="form-control" id="searchInput" placeholder="...">
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <td width="50"></td>
+                            <td>Task</td>
+                            <td width="100"></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="t in tasks">
+                            <td><input type="checkbox" /></td>
+                            <td>{{ t.Description }}</td>
+                            <td><button>Delete</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

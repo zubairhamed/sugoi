@@ -19,6 +19,11 @@ func TestRoutes(t *testing.T) {
 	assert.True(t, re.MatchString("/test/abc"))
 	assert.False(t, re.MatchString("/test/abc/def"))
 
+	re, static = CreateCompilableRoutePath("/test.abc/:var")
+	assert.False(t, static)
+	assert.True(t, re.MatchString("/test.abc/abc"))
+	assert.False(t, re.MatchString("/test.abc/abc/def"))
+
 	fn := func(*Request) Content { return nil }
 	// CreateNewRoute
 	route := CreateNewRoute("/", "GET", fn)
@@ -32,17 +37,6 @@ func TestRoutes(t *testing.T) {
 }
 
 /*
-func CreateNewRoute(path string, method string, fn RouteHandler) *Route {
-	re, _ := CreateCompilableRoutePath(path)
-
-	return &Route{
-		path:    path,
-		method:  method,
-		handler: fn,
-		regEx:   re,
-	}
-}
-
 func MatchesRoutePath(path string, re *regexp.Regexp) (bool, map[string]string) {
 	matches := re.FindAllStringSubmatch(path, -1)
 	attrs := make(map[string]string)

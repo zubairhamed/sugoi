@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"text/template"
 	"strconv"
+	"log"
 )
 
 func msgContent(defaultMsg string, msg ... string) string {
@@ -156,14 +157,17 @@ func ResponseHandler(response *Response, w http.ResponseWriter) {
 	w.WriteHeader(httpCode)
 
 	if val, ok := content.(string); ok {
+		log.Println("Content: String")
 		w.Write([]byte(val))
 		return
 	} else
 	if val, ok := content.(int); ok {
+		log.Println("Content: int")
 		w.Write([]byte(strconv.Itoa(val)))
 		return
 	} else
 	if val, ok := content.(*HtmlContent); ok {
+		log.Println("Content: HTML Content")
 		tpl := template.New(val.tpl)
 		if val.isStatic {
 			tpl.Delims("##", "##")
@@ -179,6 +183,7 @@ func ResponseHandler(response *Response, w http.ResponseWriter) {
 		err = t.Execute(w, val.model)
 		return
 	} else {
+		log.Println("JSON")
 		b, err := json.Marshal(content)
 
 		if err != nil {
