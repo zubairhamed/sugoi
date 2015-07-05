@@ -26,7 +26,6 @@ func (c *Request) GetHttpRequest() *http.Request {
 }
 
 func (c *Request) GetAttributes() map[string]string {
-
 	return c.attrs
 }
 
@@ -46,5 +45,7 @@ func NewWrappedHandler() (*WrappedHandler) {
 		routes : []*Route{},
 		beforeFilters: []BeforeFilter{},
 		defaultHandlers: make(map[int]RouteHandler),
+		staticUrl: "/static",
+		staticDir: "static",
 	}
 }
