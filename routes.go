@@ -142,13 +142,13 @@ func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	urlPath := r.URL.Path
 	method := strings.ToLower(r.Method)
 
-	if strings.HasPrefix(urlPath, wh.staticUrl) {
-		http.ServeFile(w, r, urlPath[1:])
-		return
+	if wh.staticUrl != "" {
+		if strings.HasPrefix(urlPath, wh.staticUrl) {
+			http.ServeFile(w, r, urlPath[1:])
+			return
+		}
 	}
 
-
-	log.Println("Matching Route: ", urlPath, method)
 	fn, attrs, err := MatchingRoute(urlPath, method, wh.routes)
 	req := NewRequestFromHttp(attrs, r)
 	req = invokeBeforeFilters(wh.beforeFilters, req)
