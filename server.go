@@ -82,8 +82,6 @@ func putDefaultHandler(s *SugoiServer, code int,  fn RouteHandler) {
 }
 
 func (s *SugoiServer) Serve() {
-	log.Println("Starting Sugoi!")
-
 	err := http.ListenAndServe(":" + s.port, s.handler)
 	if err != nil {
 		log.Fatal(err)
