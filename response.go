@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"text/template"
 	"strconv"
-	"log"
 )
 
 func msgContent(defaultMsg string, msg ... string) string {

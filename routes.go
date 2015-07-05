@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"log"
 )
 
 func CreateCompilableRoutePath(route string) (*regexp.Regexp, bool) {
