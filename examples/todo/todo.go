@@ -3,6 +3,8 @@ package main
 import (
 	. "github.com/zubairhamed/sugoi"
 	"github.com/zubairhamed/sugoi/examples/todo/tasks"
+	"crypto/rand"
+	"encoding/base64"
 )
 
 var taskDB *tasks.TasksDB
@@ -39,7 +41,7 @@ func setupRoutes(server *SugoiServer) {
 	server.GET("/api/tasks", handleGetAllTasks)
 	server.DELETE("/api/tasks", handleDeleteAllTasks)
 	server.GET("/api/task/:id", handleGetTask)
-	server.POST("/api/task/:id", handleAddTask)
+	server.POST("/api/task/:description", handleAddTask)
 	server.DELETE("/api/task/:id", handleDeleteTask)
 }
 
@@ -65,6 +67,12 @@ func handleGetTask(req *Request) Content {
 }
 
 func handleAddTask(req *Request) Content {
+	description := req.GetAttribute("description")
+
+	taskObj := tasks.NewTask(generateId(), description)
+
+	taskDB.Put(taskObj)
+
 	return OK()
 }
 
@@ -75,3 +83,12 @@ func handleDeleteTask(req *Request) Content {
 	return OK("Task deleted id " + id)
 }
 
+func generateId() string {
+	rb := make([]byte, 32)
+
+	rand.Read(rb)
+
+	rs := base64.URLEncoding.EncodeToString(rb)
+
+	return rs
+}

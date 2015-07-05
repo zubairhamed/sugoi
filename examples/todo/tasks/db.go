@@ -1,5 +1,4 @@
 package tasks
-import "log"
 
 func NewTaskDB() *TasksDB {
 	return &TasksDB{
@@ -36,10 +35,12 @@ func NewTask(id, description string) *Task {
 	return &Task{
 		Id: id,
 		Description: description,
+		Completed: false,
 	}
 }
 
 type Task struct {
 	Id 			string
 	Description	string
+	Completed	bool
 }
