@@ -12,14 +12,12 @@
         app.controller('todo.controller', function($scope, $http) {
             $scope.DeleteTodo = function (id) {
                 DeleteTask($scope, $http, id)
-
             }
 
             RefreshPage($scope, $http)
         });
 
         function DeleteTask($scope, $http, id) {
-            alert("/api/task/" + id);
             $http.delete("/api/task/" + id).success(function (response) {
                 RefreshPage($scope, $http)
             });
@@ -39,7 +37,7 @@
                 <div class="row" style="padding: 10px;">
                     <form>
                         <label for="searchInput">Search</label>
-                        <input type="text" class="form-control" id="searchInput" placeholder="...">
+                        <input ng-model="searchInput" type="text" class="form-control" id="searchInput" placeholder="Search an item..">
                     </form>
                 </div>
             </div>
@@ -56,7 +54,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="t in tasks">
+                        <tr ng-repeat="t in tasks | filter:searchInput">
                             <td><input type="checkbox" /></td>
                             <td>{{ t.Description }}</td>
                             <td><button ng-click="DeleteTodo(t.Id)">Delete</button></td>

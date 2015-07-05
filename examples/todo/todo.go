@@ -3,7 +3,6 @@ package main
 import (
 	. "github.com/zubairhamed/sugoi"
 	"github.com/zubairhamed/sugoi/examples/todo/tasks"
-	"log"
 )
 
 var taskDB *tasks.TasksDB
@@ -21,7 +20,7 @@ func main() {
 }
 
 func setupDefaults(server *SugoiServer) {
-	server.SetStatic("/static", "statiwwc")
+	server.SetStatic("/static", "static")
 
 	Set404Page(server, func(req *Request) Content {
 		return StaticHtml("404.html")
@@ -45,33 +44,34 @@ func setupRoutes(server *SugoiServer) {
 }
 
 func setupDB(db *tasks.TasksDB) {
-	t := tasks.NewTask("0", "Add a new Task")
-	db.Put(t)
+	db.Put(tasks.NewTask("1", "Run 100 miles"))
+	db.Put(tasks.NewTask("2", "Buy milk"))
+	db.Put(tasks.NewTask("3", "Clean the house"))
+	db.Put(tasks.NewTask("0", "Do laundry"))
 }
 
 // Route Handlers
 func handleGetAllTasks(req *Request) Content {
-	log.Println("handleGetAllTasks")
 	return taskDB.GetAll()
 }
 
 func handleDeleteAllTasks(req *Request) Content {
-	log.Println("handlDeleteAllTasks")
 	return taskDB.GetAll()
 }
 
 func handleGetTask(req *Request) Content {
-	log.Println("handleGetTask")
-	return OK()
+	id := req.GetAttribute("id")
+	return taskDB.Get(id)
 }
 
 func handleAddTask(req *Request) Content {
-	log.Println("handleAddTask")
 	return OK()
 }
 
 func handleDeleteTask(req *Request) Content {
-	log.Println("Deleting task", req.GetAttribute("id"))
-	return OK()
+	id := req.GetAttribute("id")
+	taskDB.Delete(id)
+
+	return OK("Task deleted id " + id)
 }
 

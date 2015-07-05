@@ -14,7 +14,6 @@ type TasksDB struct {
 func (db *TasksDB) GetAll() []*Task {
 	tasks := []*Task{}
 
-	log.Println(len(db.tasks))
 	for _, v := range db.tasks {
 		tasks = append(tasks, v)
 	}
@@ -25,8 +24,8 @@ func (db *TasksDB) Put(task *Task) {
 	db.tasks[task.Id] = task
 }
 
-func (db *TasksDB) Delete(t *Task) {
-	delete(db.tasks, t.Id)
+func (db *TasksDB) Delete(id string) {
+	delete(db.tasks, id)
 }
 
 func (db *TasksDB) Get(id string) *Task {
