@@ -38,11 +38,13 @@ func setupRoutes(server *SugoiServer) {
 		return StaticHtml("index.html")
 	})
 
-	server.GET("/api/tasks", handleGetAllTasks)
-	server.DELETE("/api/tasks", handleDeleteAllTasks)
-	server.GET("/api/task/:id", handleGetTask)
-	server.POST("/api/task/:description", handleAddTask)
-	server.DELETE("/api/task/:id", handleDeleteTask)
+	server.GET("/api/tasks", getAllItems)
+	server.DELETE("/api/tasks", deleteAllItems)
+	server.GET("/api/task/:id", getItem)
+	server.POST("/api/task/:description", addItem)
+	server.PUT("/api/task/:id/complete", completeItem)
+	server.PUT("/api/task/:id/uncomplete", uncompleteItem)
+	server.DELETE("/api/task/:id", deleteItem)
 }
 
 func setupDB(db *tasks.TasksDB) {
@@ -53,20 +55,28 @@ func setupDB(db *tasks.TasksDB) {
 }
 
 // Route Handlers
-func handleGetAllTasks(req *Request) Content {
+func completeItem (req *Request) Content {
+	return OK()
+}
+
+func uncompleteItem (req *Request) Content {
+	return OK()
+}
+
+func getAllItems(req *Request) Content {
 	return taskDB.GetAll()
 }
 
-func handleDeleteAllTasks(req *Request) Content {
+func deleteAllItems(req *Request) Content {
 	return taskDB.GetAll()
 }
 
-func handleGetTask(req *Request) Content {
+func getItem(req *Request) Content {
 	id := req.GetAttribute("id")
 	return taskDB.Get(id)
 }
 
-func handleAddTask(req *Request) Content {
+func addItem(req *Request) Content {
 	description := req.GetAttribute("description")
 
 	taskObj := tasks.NewTask(generateId(), description)
@@ -76,7 +86,7 @@ func handleAddTask(req *Request) Content {
 	return OK()
 }
 
-func handleDeleteTask(req *Request) Content {
+func deleteItem(req *Request) Content {
 	id := req.GetAttribute("id")
 	taskDB.Delete(id)
 

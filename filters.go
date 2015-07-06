@@ -2,6 +2,7 @@ package sugoi
 
 func NewBeforeFilterChain(beforeFilters []BeforeFilter) (*Chain) {
 	l := len(beforeFilters)
+
 	if l > 0 {
 		fc := beforeFilters[0]
 		var nextCh *Chain = nil
@@ -28,7 +29,7 @@ type Chain struct {
 func (c *Chain) NextBefore(req *Request) {
 	c.lastReq = req
 	if c.nextChain != nil {
-		c.nextChain.filter.(BeforeFilter)(req, c.nextChain)
+		c.filter.(BeforeFilter)(req, c.nextChain)
 	}
 }
 

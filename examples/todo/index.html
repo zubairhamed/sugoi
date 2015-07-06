@@ -11,8 +11,13 @@
         var app = angular.module('todo.demo', []);
         app.controller('todo.controller', function($scope, $http) {
             $scope.DeleteTodo = function (id) {
-                DeleteTask($scope, $http, id)
+                DeleteItem($scope, $http, id)
             }
+
+            $scope.DoneTodo = function (id) {
+                DoneItem($scope, $http, id)
+            }
+
 
             $scope.CreateTask = function() {
                 $http.post("/api/task/" + $scope.taskDescription).success(function (response) {
@@ -23,7 +28,11 @@
             RefreshPage($scope, $http)
         });
 
-        function DeleteTask($scope, $http, id) {
+        function DoneItem($scope, $http, id) {
+
+        }
+
+        function DeleteItem($scope, $http, id) {
             $http.delete("/api/task/" + id).success(function (response) {
                 RefreshPage($scope, $http)
             });
@@ -86,13 +95,15 @@
                         <tr>
                             <td width="50"></td>
                             <td>Task</td>
-                            <td width="100"></td>
+                            <td width="80"></td>
+                            <td width="80"></td>
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="t in tasks | filter:searchInput">
                             <td><input type="checkbox" /></td>
                             <td>{{ t.Description }}</td>
+                            <td><button ng-click="DoneTodo(t.Id)">Done</button></td>
                             <td><button ng-click="DeleteTodo(t.Id)">Delete</button></td>
                         </tr>
                     </tbody>
