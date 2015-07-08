@@ -13,7 +13,6 @@ import (
 )
 
 func main() {
-```	
 	server := NewSugoi("8080")
 	
 	server.GET("/hello", func(req *Request) Content {
