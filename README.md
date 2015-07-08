@@ -23,12 +23,16 @@ func main() {
 }
 
 ### Defining and Parameterizing Routes
-
+```
+	server.GET("/hello/:name", func(req *Request) Content {
+		name := req.GetAttribute("name")
+		return "Hello, !" + name
+	})
 
 ```
 ### Returning values
 
-#### Plain Text
+##### Plain Text
 ```
 	server.GET("/ep", func(req *Request) Content {
 		return "Hello, Sugoi!"
@@ -36,7 +40,7 @@ func main() {
 
 ```
 
-#### JSON
+##### JSON
 
 Any objects returned are automatically converted to JSON via the Go JSON Marshaler
 
@@ -49,14 +53,14 @@ Any objects returned are automatically converted to JSON via the Go JSON Marshal
 
 ```
 
-#### Static HTML
+##### Static HTML
 ```
 	server.GET("/ep", func(req *Request) Content {
 		return StaticHtml("index.html")
 	})
 ```
 
-#### Go HTML Template
+##### Go HTML Template
 ```
 	server.GET("/ep", func(req *Request) Content {
 		model := NewPerson("Joe", 25)
@@ -65,7 +69,7 @@ Any objects returned are automatically converted to JSON via the Go JSON Marshal
 	})
 ```
 
-#### Http Codes
+##### Http Codes
 ```
 	server.GET("/ep", func(req *Request) Content {
 		name := "Joe"
@@ -80,9 +84,11 @@ Any objects returned are automatically converted to JSON via the Go JSON Marshal
 	})
 ```
 
-#### Pre-filters
+### Pre-filters
+Pre-filters are code-chains which are executed before a request is passed onto a user-defined RouteHandler
 
-#### More examples
+### More examples
+See /examples/todo for a Todo List example using AngularJS
 
 
 
