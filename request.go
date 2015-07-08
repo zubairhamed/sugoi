@@ -43,7 +43,7 @@ func (c *Request) GetAttributeAsInt(o string) int {
 func NewWrappedHandler() (*WrappedHandler) {
 	return &WrappedHandler{
 		routes : []*Route{},
-		beforeFilters: []BeforeFilter{},
+		preFilters: []PreFilter{},
 		defaultHandlers: make(map[int]RouteHandler),
 		staticUrl: "/static",
 		staticDir: "static",

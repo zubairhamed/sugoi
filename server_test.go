@@ -67,9 +67,9 @@ func TestServer(t *testing.T) {
 
 	bfFn := func(*Request, *Chain) {}
 
-	assert.Equal(t, 0, len(s.handler.beforeFilters))
+	assert.Equal(t, 0, len(s.handler.preFilters))
 	s.Before(bfFn)
-	assert.Equal(t, 1, len(s.handler.beforeFilters))
+	assert.Equal(t, 1, len(s.handler.preFilters))
 	s.Before(bfFn)
-	assert.Equal(t, 2, len(s.handler.beforeFilters))
+	assert.Equal(t, 2, len(s.handler.preFilters))
 }

@@ -89,8 +89,8 @@ func (s *SugoiServer) Serve() {
 }
 
 // Before every method
-func (s *SugoiServer) Before(fn BeforeFilter) {
-	s.handler.beforeFilters = append(s.handler.beforeFilters, fn)
+func (s *SugoiServer) Before(fn PreFilter) {
+	s.handler.preFilters = append(s.handler.preFilters, fn)
 }
 
 // Handling Exceptions

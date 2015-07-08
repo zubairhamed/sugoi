@@ -84,7 +84,7 @@ func MatchingRoute(path string, method string, routes []*Route) (RouteHandler, m
 
 type WrappedHandler struct {
 	routes 			[]*Route
-	beforeFilters	[]BeforeFilter
+	preFilters		[]PreFilter
 	errorHandlers	[]ErrorHandler
 	defaultHandlers map[int]RouteHandler
 
@@ -92,11 +92,11 @@ type WrappedHandler struct {
 	staticDir 		string
 }
 
-func invokeBeforeFilters(filters []BeforeFilter, req *Request) *Request {
+func invokePreFilters(filters []PreFilter, req *Request) *Request {
 	if len(filters) > 0 {
-		chain := NewBeforeFilterChain(filters)
+		chain := NewPreFilterChain(filters)
 		if chain != nil {
-			chain.filter.(BeforeFilter)(req, chain)
+			chain.filter.(PreFilter)(req, chain)
 
 			req = chain.GetFilteredRequest()
 		}
@@ -150,7 +150,7 @@ func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	fn, attrs, err := MatchingRoute(urlPath, method, wh.routes)
 	req := NewRequestFromHttp(attrs, r)
-	req = invokeBeforeFilters(wh.beforeFilters, req)
+	req = invokePreFilters(wh.preFilters, req)
 
 	if err != nil {
 		if err == ERR_NO_MATCHING_ROUTE {

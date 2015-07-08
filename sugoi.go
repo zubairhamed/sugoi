@@ -5,7 +5,7 @@ import (
 )
 
 type Content interface{}
-type BeforeFilter func(*Request, *Chain)
+type PreFilter func(*Request, *Chain)
 type RouteHandler func(*Request) Content
 type ErrorHandler func(*Request, error)
 

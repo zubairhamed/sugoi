@@ -1,14 +1,14 @@
 package sugoi
 
-func NewBeforeFilterChain(beforeFilters []BeforeFilter) (*Chain) {
-	l := len(beforeFilters)
+func NewPreFilterChain(preFilters []PreFilter) (*Chain) {
+	l := len(preFilters)
 
 	if l > 0 {
-		fc := beforeFilters[0]
+		fc := preFilters[0]
 		var nextCh *Chain = nil
 
 		if l > 1 {
-			nextCh = NewBeforeFilterChain(beforeFilters[1:])
+			nextCh = NewPreFilterChain(preFilters[1:])
 		}
 
 		return &Chain{
@@ -26,10 +26,10 @@ type Chain struct {
 	lastReq 	*Request
 }
 
-func (c *Chain) NextBefore(req *Request) {
+func (c *Chain) NextPre(req *Request) {
 	c.lastReq = req
 	if c.nextChain != nil {
-		c.filter.(BeforeFilter)(req, c.nextChain)
+		c.filter.(PreFilter)(req, c.nextChain)
 	}
 }
 
