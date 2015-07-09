@@ -34,12 +34,6 @@ func TestRoutes(t *testing.T) {
 	assert.Equal(t, "/", route.path)
 	assert.True(t, route.regEx.MatchString("/"))
 	assert.False(t, route.regEx.MatchString("/test"))
-
-	re, static = CreateCompilableRoutePath("/test/abc/def/*")
-	assert.False(t, static)
-	assert.True(t, re.MatchString("/test/abc/def/ghi"))
-	assert.True(t, re.MatchString("/test/abc/def/123"))
-
 }
 
 /*

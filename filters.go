@@ -11,12 +11,20 @@ func NewPreFilterChain(preFilters []PreFilter) (*Chain) {
 			nextCh = NewPreFilterChain(preFilters[1:])
 		}
 
+		if nextCh == nil {
+			nextCh =  &Chain{
+				filter: nil,
+			}
+		}
+
 		return &Chain{
 			filter: fc,
 			nextChain: nextCh,
 		}
 	} else {
-		return nil
+		return &Chain{
+			filter: nil,
+		}
 	}
 }
 
@@ -28,7 +36,8 @@ type Chain struct {
 
 func (c *Chain) NextPre(req *Request) {
 	c.lastReq = req
-	if c.nextChain != nil {
+
+	if c.filter != nil {
 		c.filter.(PreFilter)(req, c.nextChain)
 	}
 }

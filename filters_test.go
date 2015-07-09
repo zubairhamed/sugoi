@@ -29,15 +29,15 @@ func TestFilters(t *testing.T) {
 		log.Println("chain3")
 		chain3Called = true
 
+		log.Print("ch", ch)
 		ch.NextPre(req)
 	}
 
-	beforeFilters := []PreFilter{
+	preFilters := []PreFilter{
 		chain1, chain2, chain3,
 	}
 
-
-	chain := NewPreFilterChain(beforeFilters)
+	chain := NewPreFilterChain(preFilters)
 	chain.NextPre(nil)
 
 	assert.True(t, chain1Called)

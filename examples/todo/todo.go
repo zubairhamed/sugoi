@@ -34,17 +34,17 @@ func setupDefaults(server *SugoiServer) {
 }
 
 func setupRoutes(server *SugoiServer) {
-	server.GET("/", func(req *Request) Content {
+	server.Get("/", func(req *Request) Content {
 		return StaticHtml("index.html")
 	})
 
-	server.GET("/api/tasks", getAllItems)
-	server.DELETE("/api/tasks", deleteAllItems)
-	server.GET("/api/task/:id", getItem)
-	server.POST("/api/task/:description", addItem)
-	server.PUT("/api/task/:id/complete", completeItem)
-	server.PUT("/api/task/:id/uncomplete", uncompleteItem)
-	server.DELETE("/api/task/:id", deleteItem)
+	server.Get("/api/tasks", getAllItems)
+	server.Delete("/api/tasks", deleteAllItems)
+	server.Get("/api/task/:id", getItem)
+	server.Post("/api/task/:description", addItem)
+	server.Put("/api/task/:id/complete", completeItem)
+	server.Put("/api/task/:id/uncomplete", uncompleteItem)
+	server.Delete("/api/task/:id", deleteItem)
 }
 
 func setupDB(db *tasks.TasksDB) {
