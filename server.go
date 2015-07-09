@@ -33,32 +33,35 @@ func (s *SugoiServer) GetRoutes(method string) []*Route {
 	return routes
 }
 
-func (s *SugoiServer) add(method string, path string, fn RouteHandler) {
-	s.handler.routes = append(s.handler.routes, CreateNewRoute(path, method, fn))
+func (s *SugoiServer) add(method string, path string, fn RouteHandler) *Route {
+	route := CreateNewRoute(path, method, fn)
+	s.handler.routes = append(s.handler.routes, route)
+
+	return route
 }
 
-func (s *SugoiServer) GET(path string, fn RouteHandler) {
-	s.add("get", path, fn)
+func (s *SugoiServer) Get(path string, fn RouteHandler) *Route {
+	return s.add("get", path, fn)
 }
 
-func (s *SugoiServer) DELETE(path string, fn RouteHandler) {
-	s.add("delete", path, fn)
+func (s *SugoiServer) Delete(path string, fn RouteHandler) *Route {
+	return s.add("delete", path, fn)
 }
 
-func (s *SugoiServer) PUT(path string, fn RouteHandler) {
-	s.add("put", path, fn)
+func (s *SugoiServer) Put(path string, fn RouteHandler) *Route {
+	return s.add("put", path, fn)
 }
 
-func (s *SugoiServer) POST(path string, fn RouteHandler) {
-	s.add("post", path, fn)
+func (s *SugoiServer) Post(path string, fn RouteHandler) *Route {
+	return s.add("post", path, fn)
 }
 
-func (s *SugoiServer) OPTIONS(path string, fn RouteHandler) {
-	s.add("options", path, fn)
+func (s *SugoiServer) Options(path string, fn RouteHandler) *Route {
+	return s.add("options", path, fn)
 }
 
-func (s *SugoiServer) PATCH(path string, fn RouteHandler) {
-	s.add("patch", path, fn)
+func (s *SugoiServer) Patch(path string, fn RouteHandler) *Route {
+	return s.add("patch", path, fn)
 }
 
 func Set404Page(s *SugoiServer, fn RouteHandler) {

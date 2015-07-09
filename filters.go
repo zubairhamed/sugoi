@@ -40,3 +40,4 @@ func (c *Chain) GetFilteredRequest() *Request  {
 		return c.lastReq
 	}
 }
+

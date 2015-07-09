@@ -37,31 +37,31 @@ func TestServer(t *testing.T) {
 	assert.Equal(t, "static", s.handler.staticDir)
 
 	// Routes
-	s.GET("/", fn)
+	s.Get("/", fn)
 	assert.Equal(t, 1, len(s.handler.routes))
 	assert.Equal(t, 1, len(s.GetRoutes("get")))
 
-	s.DELETE("/", fn)
+	s.Delete("/", fn)
 	assert.Equal(t, 2, len(s.handler.routes))
 	assert.Equal(t, 1, len(s.GetRoutes("delete")))
 
-	s.PUT("/", fn)
+	s.Put("/", fn)
 	assert.Equal(t, 3, len(s.handler.routes))
 	assert.Equal(t, 1, len(s.GetRoutes("get")))
 
-	s.POST("/", fn)
+	s.Post("/", fn)
 	assert.Equal(t, 4, len(s.handler.routes))
 	assert.Equal(t, 1, len(s.GetRoutes("get")))
 
-	s.OPTIONS("/", fn)
+	s.Options("/", fn)
 	assert.Equal(t, 5, len(s.handler.routes))
 	assert.Equal(t, 1, len(s.GetRoutes("get")))
 
-	s.PATCH("/", fn)
+	s.Patch("/", fn)
 	assert.Equal(t, 6, len(s.handler.routes))
 	assert.Equal(t, 1, len(s.GetRoutes("get")))
 
-	s.GET("/get", fn)
+	s.Get("/get", fn)
 	assert.Equal(t, 7, len(s.handler.routes))
 	assert.Equal(t, 2, len(s.GetRoutes("get")))
 
