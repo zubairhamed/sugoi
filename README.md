@@ -1,4 +1,5 @@
 # sugoi
+[![GoDoc](https://godoc.org/github.com/zubairhamed/sugoi?status.svg)](https://godoc.org/github.com/zubairhamed/sugoi)
 [![Build Status](https://drone.io/github.com/zubairhamed/sugoi/status.png)](https://drone.io/github.com/zubairhamed/sugoi/latest)
 [![Coverage Status](https://coveralls.io/repos/zubairhamed/sugoi/badge.svg?branch=master)](https://coveralls.io/r/zubairhamed/sugoi?branch=master)
 
