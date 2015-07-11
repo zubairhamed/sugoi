@@ -3,7 +3,7 @@
 [![Build Status](https://drone.io/github.com/zubairhamed/sugoi/status.png)](https://drone.io/github.com/zubairhamed/sugoi/latest)
 [![Coverage Status](https://coveralls.io/repos/zubairhamed/sugoi/badge.svg?branch=master)](https://coveralls.io/r/zubairhamed/sugoi?branch=master)
 
-#### Sugoi is a minimalist, no-fush web framework for Go.
+#### Sugoi is a minimalist, no-fuss web framework for Go.
 
 ### Example
 ```
