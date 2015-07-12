@@ -12,24 +12,20 @@ func TestFilters(t *testing.T) {
 	chain3Called := false
 
 	chain1 := func(req *Request, ch *Chain) {
-		log.Println("chain1")
 		chain1Called = true
 
 		ch.NextPre(req)
 	}
 
 	chain2 := func(req *Request, ch *Chain) {
-		log.Println("chain2")
 		chain2Called = true
 
 		ch.NextPre(req)
 	}
 
 	chain3 := func(req *Request, ch *Chain) {
-		log.Println("chain3")
 		chain3Called = true
 
-		log.Print("ch", ch)
 		ch.NextPre(req)
 	}
 

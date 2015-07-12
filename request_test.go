@@ -1,60 +1,28 @@
 package sugoi
-import "testing"
+import (
+	"testing"
+	"net/http"
+	"github.com/stretchr/testify/assert"
+)
 
 
 func TestRequests(t *testing.T) {
+	attrs := make(map[string]string)
+	attrs["a"] = "val_a"
+	attrs["b"] = "val_b"
+	attrs["c"] = "val_c"
 
+	attrs["intValue"] = "12345"
+
+	req := NewRequestFromHttp(attrs, &http.Request{})
+
+	assert.NotNil(t, req)
+	assert.NotNil(t, req.GetHttpRequest())
+
+	assert.Equal(t, "val_a", req.GetAttribute("a"))
+	assert.Equal(t, "val_b", req.GetAttribute("b"))
+	assert.Equal(t, "val_c", req.GetAttribute("c"))
+	assert.Equal(t, "12345", req.GetAttribute("intValue"))
+	assert.Equal(t, 12345, req.GetAttributeAsInt("intValue"))
+	assert.Equal(t, 4, len(req.GetAttributes()))
 }
-
-/*
-package sugoi
-import (
-	"strconv"
-	"net/http"
-)
-
-func NewRequestFromHttp(attrs map[string]string, req *http.Request) *Request {
-	return &Request{
-		attrs: attrs,
-		httpRequest: req,
-	}
-}
-
-type Request struct {
-	attrs 		map[string]string
-	httpRequest *http.Request
-	// Query
-	// Cookies
-	// Sessions
-	// get attribute
-	// set attribute
-}
-
-func (c *Request) GetHttpRequest() *http.Request {
-	return c.httpRequest
-}
-
-func (c *Request) GetAttributes() map[string]string {
-
-	return c.attrs
-}
-
-func (c *Request) GetAttribute(o string) string {
-	return c.attrs[o]
-}
-
-func (c *Request) GetAttributeAsInt(o string) int {
-	attr := c.GetAttribute(o)
-	i, _ := strconv.Atoi(attr)
-
-	return i
-}
-
-func NewWrappedHandler() (*WrappedHandler) {
-	return &WrappedHandler{
-		routes : []*Route{},
-		beforeFilters: []BeforeFilter{},
-		defaultHandlers: make(map[int]RouteHandler),
-	}
-}
- */
