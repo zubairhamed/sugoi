@@ -6,7 +6,7 @@
 #### Sugoi is a minimalist, no-fuss web framework for Go.
 
 ### Example
-```
+```go
 package main
 
 import (
@@ -25,7 +25,7 @@ func main() {
 ```
 
 ### Defining and Parameterizing Routes
-```
+```go
 	server.GET("/hello/:name", func(req *Request) Content {
 		name := req.GetAttribute("name")
 		return "Hello, !" + name
@@ -36,7 +36,7 @@ func main() {
 ### Returning values
 
 ##### Plain Text
-```
+```go
 	server.GET("/ep", func(req *Request) Content {
 		return "Hello, Sugoi!"
 	})
@@ -47,7 +47,7 @@ func main() {
 
 Any objects returned are automatically converted to JSON via the Go JSON Marshaler
 
-``` 
+```go
 	server.GET("/ep", func(req *Request) Content {
 		p := NewPerson("Joe", 25)
 		
@@ -57,14 +57,14 @@ Any objects returned are automatically converted to JSON via the Go JSON Marshal
 ```
 
 ##### Static HTML
-```
+```go
 	server.GET("/ep", func(req *Request) Content {
 		return StaticHtml("index.html")
 	})
 ```
 
 ##### Go HTML Template
-```
+```go
 	server.GET("/ep", func(req *Request) Content {
 		model := NewPerson("Joe", 25)
 	
@@ -73,7 +73,7 @@ Any objects returned are automatically converted to JSON via the Go JSON Marshal
 ```
 
 ##### Http Codes
-```
+```go
 	server.GET("/ep", func(req *Request) Content {
 		name := "Joe"
 		rec := db.GetByName(name)
