@@ -2,7 +2,6 @@ package sugoi
 import (
 	"testing"
 	"github.com/stretchr/testify/assert"
-	"log"
 )
 
 
