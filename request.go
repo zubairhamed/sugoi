@@ -1,18 +1,19 @@
 package sugoi
+
 import (
-	"strconv"
 	"net/http"
+	"strconv"
 )
 
 func NewRequestFromHttp(attrs map[string]string, req *http.Request) *Request {
 	return &Request{
-		attrs: attrs,
+		attrs:       attrs,
 		httpRequest: req,
 	}
 }
 
 type Request struct {
-	attrs 		map[string]string
+	attrs       map[string]string
 	httpRequest *http.Request
 	// Query
 	// Cookies
@@ -40,12 +41,12 @@ func (c *Request) GetAttributeAsInt(o string) int {
 	return i
 }
 
-func NewWrappedHandler() (*WrappedHandler) {
+func NewWrappedHandler() *WrappedHandler {
 	return &WrappedHandler{
-		routes : []*Route{},
-		preFilters: []PreFilter{},
+		routes:          []*Route{},
+		preFilters:      []PreFilter{},
 		defaultHandlers: make(map[int]RouteHandler),
-		staticUrl: "/static",
-		staticDir: "static",
+		staticUrl:       "/static",
+		staticDir:       "static",
 	}
 }

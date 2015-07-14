@@ -1,4 +1,5 @@
 package sugoi
+
 import (
 	"log"
 	"net/http"
@@ -7,13 +8,13 @@ import (
 func NewSugoi(port string) *SugoiServer {
 	return &SugoiServer{
 		handler: NewWrappedHandler(),
-		port: port,
+		port:    port,
 	}
 }
 
 type SugoiServer struct {
-	handler 		*WrappedHandler
-	port 			string
+	handler *WrappedHandler
+	port    string
 }
 
 func (s *SugoiServer) SetStatic(url, dir string) {
@@ -80,12 +81,12 @@ func Set403Page(s *SugoiServer, fn RouteHandler) {
 	putDefaultHandler(s, http.StatusForbidden, fn)
 }
 
-func putDefaultHandler(s *SugoiServer, code int,  fn RouteHandler) {
+func putDefaultHandler(s *SugoiServer, code int, fn RouteHandler) {
 	s.handler.defaultHandlers[code] = fn
 }
 
 func (s *SugoiServer) Serve() {
-	err := http.ListenAndServe(":" + s.port, s.handler)
+	err := http.ListenAndServe(":"+s.port, s.handler)
 	if err != nil {
 		log.Fatal(err)
 	}

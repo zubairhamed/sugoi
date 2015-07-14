@@ -1,9 +1,9 @@
 package sugoi
-import (
-	"testing"
-	"github.com/stretchr/testify/assert"
-)
 
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
 func TestFilters(t *testing.T) {
 	chain1Called := false

@@ -1,9 +1,9 @@
 package sugoi
 
 import (
-	"regexp"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 )
 
@@ -65,16 +65,16 @@ func MatchesRoutePath(path string, re *regexp.Regexp) (bool, map[string]string) 
 }
 
 type Route struct {
-	path 	string
-	method 	string
+	path    string
+	method  string
 	handler RouteHandler
-	regEx 	*regexp.Regexp
+	regEx   *regexp.Regexp
 }
 
 func MatchingRoute(path string, method string, routes []*Route) (RouteHandler, map[string]string, error) {
 	for _, route := range routes {
 		if method == route.method {
-			match, attrs :=  MatchesRoutePath(path, route.regEx)
+			match, attrs := MatchesRoutePath(path, route.regEx)
 			if match {
 				return route.handler, attrs, nil
 			}
@@ -84,13 +84,13 @@ func MatchingRoute(path string, method string, routes []*Route) (RouteHandler, m
 }
 
 type WrappedHandler struct {
-	routes 			[]*Route
-	preFilters		[]PreFilter
-	errorHandlers	[]ErrorHandler
+	routes          []*Route
+	preFilters      []PreFilter
+	errorHandlers   []ErrorHandler
 	defaultHandlers map[int]RouteHandler
 
-	staticUrl 		string
-	staticDir 		string
+	staticUrl string
+	staticDir string
 }
 
 func invokePreFilters(filters []PreFilter, req *Request) *Request {
@@ -111,10 +111,10 @@ func (wh *WrappedHandler) CallDefaultHandler(code int, req *Request) Content {
 		return h(req)
 	} else {
 		switch code {
-			case 404:
+		case 404:
 			return NotFound()
 
-			case 500:
+		case 500:
 			return InternalServerError()
 		}
 		return InternalServerError()
@@ -124,7 +124,7 @@ func (wh *WrappedHandler) CallDefaultHandler(code int, req *Request) Content {
 func NewResponse(content interface{}, httpCode int) *Response {
 	return &Response{
 		httpCode: httpCode,
-		content: content,
+		content:  content,
 	}
 }
 

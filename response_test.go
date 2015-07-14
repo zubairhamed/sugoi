@@ -1,9 +1,9 @@
 package sugoi
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
 	"net/http"
+	"testing"
 )
 
 func TestResponse(t *testing.T) {

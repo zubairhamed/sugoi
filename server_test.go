@@ -1,9 +1,9 @@
 package sugoi
-import (
-	"testing"
-	"github.com/stretchr/testify/assert"
-)
 
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
 func TestServer(t *testing.T) {
 	s := NewSugoi("8080")

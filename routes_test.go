@@ -1,7 +1,8 @@
 package sugoi
+
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestRoutes(t *testing.T) {
@@ -12,7 +13,7 @@ func TestRoutes(t *testing.T) {
 	re, static = CreateCompilableRoutePath("/test")
 	assert.True(t, static)
 	assert.False(t, re.MatchString("/"))
-	assert.True(t,  re.MatchString("/test"))
+	assert.True(t, re.MatchString("/test"))
 
 	re, static = CreateCompilableRoutePath("/test/:var")
 	assert.False(t, static)
@@ -146,4 +147,4 @@ func (wh *WrappedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
- */
+*/

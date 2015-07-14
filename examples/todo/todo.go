@@ -1,10 +1,10 @@
 package main
 
 import (
-	. "github.com/zubairhamed/sugoi"
-	"github.com/zubairhamed/sugoi/examples/todo/tasks"
 	"crypto/rand"
 	"encoding/base64"
+	. "github.com/zubairhamed/sugoi"
+	"github.com/zubairhamed/sugoi/examples/todo/tasks"
 )
 
 var taskDB *tasks.TasksDB
@@ -55,11 +55,11 @@ func setupDB(db *tasks.TasksDB) {
 }
 
 // Route Handlers
-func completeItem (req *Request) Content {
+func completeItem(req *Request) Content {
 	return OK()
 }
 
-func uncompleteItem (req *Request) Content {
+func uncompleteItem(req *Request) Content {
 	return OK()
 }
 

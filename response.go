@@ -1,12 +1,13 @@
 package sugoi
+
 import (
-	"net/http"
 	"encoding/json"
-	"text/template"
+	"net/http"
 	"strconv"
+	"text/template"
 )
 
-func msgContent(defaultMsg string, msg ... string) string {
+func msgContent(defaultMsg string, msg ...string) string {
 	var content string
 
 	if len(msg) > 0 {
@@ -17,135 +18,135 @@ func msgContent(defaultMsg string, msg ... string) string {
 	return content
 }
 
-func InternalServerError(msg ... string) HttpCode {
+func InternalServerError(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusInternalServerError,
+		code:    http.StatusInternalServerError,
 		content: msgContent("500 - Internal Server Error", msg...),
 	}
 }
 
-func NotFound(msg ... string) HttpCode {
+func NotFound(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusNotFound,
+		code:    http.StatusNotFound,
 		content: msgContent("404 - Not Found", msg...),
 	}
 }
 
-func OK(msg ... string) HttpCode {
+func OK(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusOK,
+		code:    http.StatusOK,
 		content: msgContent("200 - OK", msg...),
 	}
 }
 
-func NoContent(msg ... string) HttpCode {
+func NoContent(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusNoContent,
+		code:    http.StatusNoContent,
 		content: msgContent("204 - No Content", msg...),
 	}
 }
 
-func Accepted(msg ... string) HttpCode {
+func Accepted(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusAccepted,
+		code:    http.StatusAccepted,
 		content: msgContent("202 - Accepted", msg...),
 	}
 }
 
-func ServiceUnavailable(msg ... string) HttpCode {
+func ServiceUnavailable(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusServiceUnavailable,
+		code:    http.StatusServiceUnavailable,
 		content: msgContent("503 - Service Unavailable", msg...),
 	}
 }
 
-func BadRequest(msg ... string) HttpCode {
+func BadRequest(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusBadRequest,
+		code:    http.StatusBadRequest,
 		content: msgContent("400 - Bad Request", msg...),
 	}
 }
 
-func Unauthorized(msg ... string) HttpCode {
+func Unauthorized(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusUnauthorized,
+		code:    http.StatusUnauthorized,
 		content: msgContent("401 -Unauthorized", msg...),
 	}
 }
 
-func Forbidden(msg ... string) HttpCode {
+func Forbidden(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusForbidden,
+		code:    http.StatusForbidden,
 		content: msgContent("403 - Forbidden", msg...),
 	}
 }
 
-func MethodNotAllowed(msg ... string) HttpCode {
+func MethodNotAllowed(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusMethodNotAllowed,
+		code:    http.StatusMethodNotAllowed,
 		content: msgContent("405 - Not Allowed", msg...),
 	}
 }
 
-func NotImplemented(msg ... string) HttpCode {
+func NotImplemented(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusNotImplemented,
+		code:    http.StatusNotImplemented,
 		content: msgContent("501 - Not Implemented", msg...),
 	}
 }
 
-func NotModified(msg ... string) HttpCode {
+func NotModified(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusNotModified,
+		code:    http.StatusNotModified,
 		content: msgContent("304 - Not Modified", msg...),
 	}
 }
 
-func UnsupportedMediaType(msg ... string) HttpCode {
+func UnsupportedMediaType(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusUnsupportedMediaType,
+		code:    http.StatusUnsupportedMediaType,
 		content: msgContent("415 - Unsupported Media Type", msg...),
 	}
 }
 
-func Conflict(msg ... string) HttpCode {
+func Conflict(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusConflict,
+		code:    http.StatusConflict,
 		content: msgContent("409 - Conflict", msg...),
 	}
 }
 
-func NotAcceptable(msg ... string) HttpCode {
+func NotAcceptable(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusNotAcceptable,
+		code:    http.StatusNotAcceptable,
 		content: msgContent("406 - Not Acceptable", msg...),
 	}
 }
 
-func Created(msg ... string) HttpCode {
+func Created(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusCreated,
+		code:    http.StatusCreated,
 		content: msgContent("201 - Created", msg...),
 	}
 }
 
-func Gone(msg ... string) HttpCode {
+func Gone(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusGone,
+		code:    http.StatusGone,
 		content: msgContent("410 - Gone", msg...),
 	}
 }
 
-func Found(msg ... string) HttpCode {
+func Found(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusFound,
+		code:    http.StatusFound,
 		content: msgContent("302 - Found", msg...),
 	}
 }
 
-func MovedPermanently(msg ... string) HttpCode {
+func MovedPermanently(msg ...string) HttpCode {
 	return HttpCode{
-		code: http.StatusMovedPermanently,
+		code:    http.StatusMovedPermanently,
 		content: msgContent("301 - Moved Permanently", msg...),
 	}
 }
@@ -158,12 +159,10 @@ func ResponseHandler(response *Response, w http.ResponseWriter) {
 	if val, ok := content.(string); ok {
 		w.Write([]byte(val))
 		return
-	} else
-	if val, ok := content.(int); ok {
+	} else if val, ok := content.(int); ok {
 		w.Write([]byte(strconv.Itoa(val)))
 		return
-	} else
-	if val, ok := content.(*HtmlContent); ok {
+	} else if val, ok := content.(*HtmlContent); ok {
 		tpl := template.New(val.tpl)
 		if val.isStatic {
 			tpl.Delims("##", "##")
@@ -192,7 +191,7 @@ func ResponseHandler(response *Response, w http.ResponseWriter) {
 }
 
 type HttpCode struct {
-	code 	int
+	code    int
 	content string
 }
 
@@ -205,27 +204,27 @@ func (h *HttpCode) GetContent() string {
 }
 
 type Response struct {
-	httpCode 	int
-	content 	interface{}
+	httpCode int
+	content  interface{}
 }
 
 func StaticHtml(tpl string) *HtmlContent {
 	return &HtmlContent{
-		tpl: tpl,
+		tpl:      tpl,
 		isStatic: true,
 	}
 }
 
 func TemplateHtml(tpl string, model interface{}) *HtmlContent {
 	return &HtmlContent{
-		tpl: tpl,
-		model: model,
+		tpl:      tpl,
+		model:    model,
 		isStatic: false,
 	}
 }
 
 type HtmlContent struct {
-	tpl 		string
-	model 		interface{}
-	isStatic	bool
+	tpl      string
+	model    interface{}
+	isStatic bool
 }

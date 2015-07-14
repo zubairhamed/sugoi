@@ -1,10 +1,10 @@
 package sugoi
-import (
-	"testing"
-	"net/http"
-	"github.com/stretchr/testify/assert"
-)
 
+import (
+	"github.com/stretchr/testify/assert"
+	"net/http"
+	"testing"
+)
 
 func TestRequests(t *testing.T) {
 	attrs := make(map[string]string)

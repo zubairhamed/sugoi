@@ -7,7 +7,7 @@ func NewTaskDB() *TasksDB {
 }
 
 type TasksDB struct {
-	tasks 	map[string]*Task
+	tasks map[string]*Task
 }
 
 func (db *TasksDB) GetAll() []*Task {
@@ -33,14 +33,14 @@ func (db *TasksDB) Get(id string) *Task {
 
 func NewTask(id, description string) *Task {
 	return &Task{
-		Id: id,
+		Id:          id,
 		Description: description,
-		Completed: false,
+		Completed:   false,
 	}
 }
 
 type Task struct {
-	Id 			string
-	Description	string
-	Completed	bool
+	Id          string
+	Description string
+	Completed   bool
 }

@@ -1,6 +1,6 @@
 package sugoi
 
-func NewPreFilterChain(preFilters []PreFilter) (*Chain) {
+func NewPreFilterChain(preFilters []PreFilter) *Chain {
 	l := len(preFilters)
 
 	if l > 0 {
@@ -12,13 +12,13 @@ func NewPreFilterChain(preFilters []PreFilter) (*Chain) {
 		}
 
 		if nextCh == nil {
-			nextCh =  &Chain{
+			nextCh = &Chain{
 				filter: nil,
 			}
 		}
 
 		return &Chain{
-			filter: fc,
+			filter:    fc,
 			nextChain: nextCh,
 		}
 	} else {
@@ -29,9 +29,9 @@ func NewPreFilterChain(preFilters []PreFilter) (*Chain) {
 }
 
 type Chain struct {
-	filter 		interface{}
-	nextChain 	*Chain
-	lastReq 	*Request
+	filter    interface{}
+	nextChain *Chain
+	lastReq   *Request
 }
 
 func (c *Chain) NextPre(req *Request) {
@@ -42,11 +42,10 @@ func (c *Chain) NextPre(req *Request) {
 	}
 }
 
-func (c *Chain) GetFilteredRequest() *Request  {
+func (c *Chain) GetFilteredRequest() *Request {
 	if c.nextChain != nil {
 		return c.nextChain.GetFilteredRequest()
 	} else {
 		return c.lastReq
 	}
 }
-
