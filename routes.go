@@ -1,4 +1,5 @@
 package sugoi
+
 import (
 	"regexp"
 	"fmt"
