@@ -41,28 +41,32 @@ func (s *SugoiServer) add(method string, path string, fn RouteHandler) *Route {
 	return route
 }
 
+func (s *SugoiServer) Handle(method string, path string, fn RouteHandler) *Route {
+	return s.add(method, path, fn)
+}
+
 func (s *SugoiServer) Get(path string, fn RouteHandler) *Route {
-	return s.add("get", path, fn)
+	return s.Handle("get", path, fn)
 }
 
 func (s *SugoiServer) Delete(path string, fn RouteHandler) *Route {
-	return s.add("delete", path, fn)
+	return s.Handle("delete", path, fn)
 }
 
 func (s *SugoiServer) Put(path string, fn RouteHandler) *Route {
-	return s.add("put", path, fn)
+	return s.Handle("put", path, fn)
 }
 
 func (s *SugoiServer) Post(path string, fn RouteHandler) *Route {
-	return s.add("post", path, fn)
+	return s.Handle("post", path, fn)
 }
 
 func (s *SugoiServer) Options(path string, fn RouteHandler) *Route {
-	return s.add("options", path, fn)
+	return s.Handle("options", path, fn)
 }
 
 func (s *SugoiServer) Patch(path string, fn RouteHandler) *Route {
-	return s.add("patch", path, fn)
+	return s.Handle("patch", path, fn)
 }
 
 func Set404Page(s *SugoiServer, fn RouteHandler) {
