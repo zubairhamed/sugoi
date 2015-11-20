@@ -5,6 +5,30 @@ import (
 	"net/http"
 )
 
+
+type HttpServer interface {
+	SetStatic(url, dir string)
+	GetRoutes(method string) []*Route
+
+	Handle(method string, path string, fn RouteHandler) *Route
+	Get(path string, fn RouteHandler) *Route
+	Delete(path string, fn RouteHandler) *Route
+	Put(path string, fn RouteHandler) *Route
+	Post(path string, fn RouteHandler) *Route
+	Options(path string, fn RouteHandler) *Route
+	Patch(path string, fn RouteHandler) *Route
+
+	Start()
+	Stop()
+
+	Before(fn PreFilter)
+	Error(fn ErrorHandler)
+}
+
+func NewHttpServer(port string) HttpServer {
+	return NewSugoi(port)
+}
+
 func NewSugoi(port string) *SugoiServer {
 	return &SugoiServer{
 		handler: NewWrappedHandler(),
@@ -89,11 +113,15 @@ func putDefaultHandler(s *SugoiServer, code int, fn RouteHandler) {
 	s.handler.defaultHandlers[code] = fn
 }
 
-func (s *SugoiServer) Serve() {
+func (s *SugoiServer) Start() {
 	err := http.ListenAndServe(":"+s.port, s.handler)
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func (s *SugoiServer) Stop() {
+
 }
 
 // Before every method

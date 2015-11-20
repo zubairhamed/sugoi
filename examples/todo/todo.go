@@ -18,7 +18,7 @@ func main() {
 	setupRoutes(server)
 	setupDefaults(server)
 
-	server.Serve()
+	server.Start()
 }
 
 func setupDefaults(server *SugoiServer) {

@@ -179,7 +179,6 @@ func ResponseHandler(response *Response, w http.ResponseWriter) {
 		return
 	} else {
 		b, err := json.Marshal(content)
-
 		if err != nil {
 			SendResponse(InternalServerError(err.Error()), w)
 			return
