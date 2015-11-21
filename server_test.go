@@ -10,7 +10,7 @@ func TestServer(t *testing.T) {
 
 	assert.NotNil(t, s)
 	assert.NotNil(t, s.handler)
-	assert.Equal(t, s.port, "8080")
+	assert.Equal(t, s.host, "8080")
 	assert.Equal(t, 0, len(s.handler.defaultHandlers))
 
 	fn := func(*Request) Content {

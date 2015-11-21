@@ -3,6 +3,7 @@ package sugoi
 import (
 	"log"
 	"net/http"
+	"strings"
 )
 
 
@@ -29,16 +30,16 @@ func NewHttpServer(port string) HttpServer {
 	return NewSugoi(port)
 }
 
-func NewSugoi(port string) *SugoiServer {
+func NewSugoi(host string) *SugoiServer {
 	return &SugoiServer{
 		handler: NewWrappedHandler(),
-		port:    port,
+		host:    host,
 	}
 }
 
 type SugoiServer struct {
 	handler *WrappedHandler
-	port    string
+	host    string
 }
 
 func (s *SugoiServer) SetStatic(url, dir string) {
@@ -114,7 +115,13 @@ func putDefaultHandler(s *SugoiServer, code int, fn RouteHandler) {
 }
 
 func (s *SugoiServer) Start() {
-	err := http.ListenAndServe(":"+s.port, s.handler)
+	host := s.host
+	if !strings.Contains(s.host, ":") {
+		host = ":" + s.host
+	}
+	
+	log.Println("Started HTTP Server ", host)
+	err := http.ListenAndServe(host, s.handler)
 	if err != nil {
 		log.Fatal(err)
 	}
